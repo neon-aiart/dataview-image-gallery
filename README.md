@@ -1,6 +1,6 @@
 # 🏖️ DataView Image Gallery v1.5  
 
-<img src="./00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" alt="thumbnail">
+<img src="./00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
 🇯🇵  
 
