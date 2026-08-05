@@ -448,8 +448,6 @@ There are no planned feature updates at this time, but bug reports will be addre
 ☑️ 拡大表示でブロックの切り替えボタン（←／→）を実装  
 ✅ NGフォルダを追加  
 
-* [ ] セレクトボックスがちらつく  
-
 ### v1.4 (UnReleased)  
 
 ✅ 見出しの変更ボタンを追加  
