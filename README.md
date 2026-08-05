@@ -16,6 +16,10 @@ A plugin-grade, feature-rich image gallery script for Obsidian built with Datavi
 It automatically extracts images from notes within a specified folder (or your entire Vault), associates them with their corresponding headings, and displays them as a clean card grid.  
 Enjoy a seamless browsing experience with carousel album views (with dot indicators) for multiple images under a single heading, full keyboard-driven lightbox navigation, and interactive controls.  
 
+⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)
+
+<br clear="right">  
+
 ---
 
 ## 🎨 インフォグラフィック (Infographic)  
