@@ -1,5 +1,6 @@
 # 🏖️ DataView Image Gallery v1.5  
 
+<img src="./00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" alt="thumbnail">
 🇯🇵  
 
 Obsidianのノート内に、プラグイン級の高機能な画像ギャラリーを構築できるDataviewJSスクリプトです  
