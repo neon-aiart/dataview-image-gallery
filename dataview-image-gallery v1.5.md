@@ -12,7 +12,7 @@
 --->
 
 ```dataviewjs
-// 自分自身のファイル名（拡張子なし）を自動取得
+// 自分自身のファイル名（拡張子なし）
 const currentName = dv.current().file.name;
 // 取得した名前のJSファイルを呼び出す
 await dv.view(currentName);
