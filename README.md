@@ -438,6 +438,8 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 
 ### v1.6 and later (Upcoming Tasks)  
 
+* [x] yamlですべての区切り線の応用バリエーションに対応  
+
 No Tasks...  
 
 **本スクリプトは本バージョンをもって機能的に完成しています。**  
