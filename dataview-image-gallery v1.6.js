@@ -197,7 +197,7 @@ const targetHeaderLevels = parseHeaderLevels(rawHeader);
 let currentHeaderLevels = [...targetHeaderLevels, ];
 
 // すべての区切り線
-let hrMode = DEFAULT_ALL_HR_MODE;
+let hrMode = currentNote.all_hr_mode || DEFAULT_ALL_HR_MODE;
 
 let rawPages = [];
 
