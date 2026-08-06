@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * 🏖️ DataView Image Gallery v1.5
+ * 🏖️ DataView Image Gallery v1.6-dev
  * ==============================================================================
  * Copyright (c) 2026 ねおん (Neon)
  * https://github.com/neon-aiart/dataview-image-gallery
@@ -8,7 +8,7 @@
  * ==============================================================================
  */
 
-const SCRIPT_VERSION = '1.5';
+const SCRIPT_VERSION = '1.6-dev';
 
 const DEBUG = false;
 
@@ -22,6 +22,7 @@ const DEFAULT_FOLDER = dv.current().file.folder; // デフォルトはカレン�
 const DEFAULT_HEADER_LEVELS = [3, 4, ];          // デフォルトの見出しは H3 と H4 ([3, 4, ])
 const DEFAULT_FILTER_QUERY = "";                 // 絞り込み
 const DEFAULT_FILTER_INCLUDE = true;             // デフォルトは「含む(緑)」
+const DEFAULT_ALL_HR_MODE = false;               // すべての区切り線をブロック化
 
 // 一覧から除外するNGフォルダリスト: 完全一致、または部分一致で弾くフォルダ名・パスを指定
 const DEFAULT_NG_FOLDERS = [
@@ -88,19 +89,18 @@ let cardMaxWidth = `${cardMaxWidthNum}px`;
 
 // YAMLプロパティからの読み込み
 let rawFolder = currentNote.folder !== undefined ? String(currentNote.folder).trim() : DEFAULT_FOLDER;
-// --- 1. Obsidianのメタデータキャッシュから「生のYAML文字列」を直接取得 ---
-const file = app.vault.getAbstractFileByPath(dv.current().file.path);
-const cache = app.metadataCache.getFileCache(file);
-const rawFrontmatter = cache?.frontmatter || {};
-// 生の値（ユーザーがYAMLに書いたそのままのテキスト）を取得
-let rawFilterQuery = rawFrontmatter.filter_query;
-// --- 2. あとは「文字列化してtrimする」だけの超シンプル一発処理 ---
-let currentFilterQuery = DEFAULT_FILTER_QUERY;
-if (rawFilterQuery !== undefined && rawFilterQuery !== null) {
-    // 数値でも日付風文字列でも、生テキストとして一発で安全に文字列化！
-    currentFilterQuery = String(rawFilterQuery).trim();
+
+// --- Obsidianのメタデータキャッシュから「生のYAML文字列」を直接取得 ---
+function getRawYamlString(fieldName, defaultValue = "") {
+    const file = app.vault.getAbstractFileByPath(dv.current().file.path);
+    const rawValue = app.metadataCache.getFileCache(file)?.frontmatter?.[fieldName];
+    return (rawValue !== undefined && rawValue !== null) ? String(rawValue).trim() : defaultValue;
 }
-let rawFilterMode = currentNote.filter_mode;
+
+// ① クエリ文字列：Dataviewのお節介を回避して生のまま取得
+let currentFilterQuery = getRawYamlString("filter_query", DEFAULT_FILTER_QUERY);
+// ② モード判定：booleanの解釈は Dataview(dv.current) に任せる
+const rawFilterMode = currentNote.filter_mode;
 let currentFilterIncludeMode = DEFAULT_FILTER_INCLUDE;
 if (typeof rawFilterMode === "boolean") {
     currentFilterIncludeMode = rawFilterMode; // true / false
@@ -195,6 +195,9 @@ const targetHeaderLevels = parseHeaderLevels(rawHeader);
 
 // 現在選択されているレベル配列（ステート変数）
 let currentHeaderLevels = [...targetHeaderLevels, ];
+
+// すべての区切り線
+let hrMode = DEFAULT_ALL_HR_MODE;
 
 let rawPages = [];
 
@@ -1120,7 +1123,11 @@ const renderGallery = async () => {
         let fileContent = await app.vault.adapter.read(path);
 
         // --- 1. 区切り線 (--- / *** / - - - / * * *) でブロック分割 ---
-        const hrRegex = /^(?:---|\*\*\*|- - -|\* \* \*)\s*$/gm;
+        let hrRegex = /^(?:---|\*\*\*|- - -|\* \* \*)\s*$/gm;
+        if (hrMode) {
+            // すべての応用バリエーション
+            hrRegex = /^(?:(?:\s*-\s*){3,}|(?:\s*\*\s*){3,}|(?:\s*_\s*){3,})$/gm;
+        }
         let blocks = [];
         let lastIndex = 0;
         let hrMatch;

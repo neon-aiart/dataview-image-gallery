@@ -1,4 +1,4 @@
-# 🏖️ DataView Image Gallery v1.5  
+# 🏖️ DataView Image Gallery v1.6-dev  
 
 <img src="./00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
@@ -449,7 +449,7 @@ There are no planned feature updates at this time, but bug reports will be addre
 ### v1.5  (Current Release)  
 
 ✅ ブロック化：１つの見出しにつき10枚までの複数画像に対応  
-  &emsp; ☑️ 切り替えボタンとドットの実装  
+  &emsp; ☑️ 画像一覧で切り替えボタンとドットの実装  
   &emsp; ☑️ 拡大表示でも複数画像の切り替えボタンとドットを実装  
 ☑️ 拡大表示でブロックの切り替えボタン（←／→）を実装  
 ✅ NGフォルダを追加  
