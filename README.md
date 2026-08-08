@@ -438,8 +438,12 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 
 ### v1.6 and later (Upcoming Tasks)  
 
-* [x] yamlですべての区切り線の応用バリエーションに対応  
+☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
+* [ ] 枠を列に変更  
+* [ ] 保管庫と並び替えと列をアイコンフォントに変更  
+* [ ] ワンクリックで追加できるボタンを追加  
 
+<!--
 No Tasks...  
 
 **本スクリプトは本バージョンをもって機能的に完成しています。**  
@@ -447,6 +451,7 @@ No Tasks...
 
 **This script is functionally complete as of this version.**  
 There are no planned feature updates at this time, but bug reports will be addressed as needed.  
+-->
 
 ### v1.5  (Current Release)  
 
