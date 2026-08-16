@@ -1,4 +1,4 @@
-# 🏖️ DataView Image Gallery v1.6-dev  
+# 🏖️ DataView Image Gallery v1.6  
 
 <img src="./assets/00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
@@ -481,17 +481,12 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 
 ## 📝 更新履歴 (Changelog)  
 
-### v1.6 and later (Upcoming Tasks)  
+### v1.7 and later (Upcoming Tasks / Backlog)  
 
-☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
-<!-- ☑️ yamlにdebugを追加 -->
+* [ ] ワンクリックで追加できるボタン  
+* [ ] ファイルごとでアコーディオン  
 
-(backlog)  
-
-* [ ] 保管庫と並び替えと列をアイコンフォントに変更  
-* [ ] ワンクリックで追加できるボタンを追加  
-
-* [ ] ファイル名を見出しにする  
+Work in Progress...  
 
 <!--
 No Tasks...  
@@ -503,7 +498,17 @@ No Tasks...
 There are no planned feature updates at this time, but bug reports will be addressed as needed.  
 -->
 
-### v1.5  (Current Release)  
+### v1.6 (Current Release)  
+
+✅ 保管庫と並び替えと列数のテキストをアイコンに変更  
+✅ 並び替えのファイル名/作成日時/更新日時のセレクトボックスをアイコン（トグル）に変更  
+✅ 目次 (TOC) フローティングボタンを追加  
+☑️ 🔔更新通知を追加  
+
+☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
+☑️ yamlにdebugを追加  
+
+### v1.5  
 
 ✅ ブロック化：１つの見出しにつき10枚までの複数画像に対応  
   &emsp; ☑️ 画像一覧で切り替えボタンとドットの実装  
