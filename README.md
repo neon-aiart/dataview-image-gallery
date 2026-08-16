@@ -16,7 +16,7 @@ A plugin-grade, feature-rich image gallery script for Obsidian built with Datavi
 It automatically extracts images from notes within a specified folder (or your entire Vault), associates them with their corresponding headings, and displays them as a clean card grid.  
 Enjoy a seamless browsing experience with carousel album views (with dot indicators) for multiple images under a single heading, full keyboard-driven lightbox navigation, and interactive controls.  
 
-⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)
+⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)  
 
 <br clear="right">  
 
@@ -29,6 +29,13 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 <details><summary>
   🌐 Other Language Version
 </summary>
+« <a href="./assets/dataview-image-gallery-info-jp.png">🇯🇵 JP</a> /
+  <a href="./assets/dataview-image-gallery-info-en.png">🇺🇸 🇬🇧 EN</a> /
+  <a href="./assets/dataview-image-gallery-info-es.png">🇪🇸 ES</a> /
+  <a href="./assets/dataview-image-gallery-info-cn.png">🇨🇳 CN</a> /
+  <a href="./assets/dataview-image-gallery-info-kr.png">🇰🇷 KR</a> /
+  <a href="./assets/dataview-image-gallery-info-pt.png">🇧🇷 🇵🇹 PT</a> /
+  <a href="./assets/dataview-image-gallery-info-id.png">🇮🇩 ID</a> »  
 <img src="https://info-pick.neon-aiillust.workers.dev/dataview-image-gallery?details" alt="infographic details" width="100%">
 </details>
 
@@ -52,7 +59,7 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 ### 🍹 リッチで直感的なコントロールバー  
 
-* **インタラクティブな設定変更**: 列ごとの枠数（1〜10）、ソート基準（ファイル名/作成日時/更新日時）、昇順/降順を画面上のボタンからいつでも変更できます  
+* **インタラクティブな設定変更**: 列数（1〜10）、並び替え（ファイル名/作成日時/更新日時）、昇順/降順を画面上のボタンからいつでも変更できます  
 * **フォルダ切替機能**: セレクトボックスから保管庫内の別フォルダへジャンプ  
   * 主要な不要なフォルダ（`.obsidian`、`trash` など）はNGフォルダ（除外）に設定済み  
 * **スマート検索フィルター**: 正規表現対応の検索窓を搭載  
@@ -439,9 +446,21 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 ### v1.6 and later (Upcoming Tasks)  
 
 ☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
+
+<!-- ☑️ yamlにdebugを追加 -->
+
+(backlog)  
+
 * [ ] 枠を列に変更  
 * [ ] 保管庫と並び替えと列をアイコンフォントに変更  
 * [ ] ワンクリックで追加できるボタンを追加  
+
+* [ ] インフォ: 日本語・英語・ロシア語・スペイン語・中国語・韓国語・ポルトガル語・インドネシア語  
+
+* [ ] READMEに応用バリエーションについてを追記  
+* [ ] READMEに元ノートのリーディングビューに表示しない hidden についてを追記  
+
+* [ ] ファイル名を見出しにする  
 
 <!--
 No Tasks...  
@@ -476,7 +495,7 @@ There are no planned feature updates at this time, but bug reports will be addre
 
 ### v1.2 (UnReleased)  
 
-✅ 列ごとの枠数を 1～10 で変更  
+✅ 列数を 1～10 で変更  
 ✅ 画像クリックで拡大表示  
 ☑️ 画像がない（srcが空欄の）カードをスキップ  
 
@@ -558,6 +577,10 @@ With 1,500+ lines of robust architecture, intuitive UI controls, and flawless ha
 * **Special Thanks**:  
   * **Knowledge Base Platform**: [Obsidian](https://obsidian.md/)  
   * **Dataview Plugin Architect**: Michael Brenan ([DataView](https://github.com/blacksmithgu/obsidian-dataview))  
+  * **Icon Libraries & Resources**:  
+    * **The World’s Popular Icon Toolkit**: [Font Awesome Free](https://fontawesome.com/search?ic=free-collection)  
+    * **Universal UI Symbol System**: [Google Material Symbols](https://fonts.google.com/icons)  
+    * **Next-Generation Open Source Icon Engine**: [Lucide Icons](https://lucide.dev/icons/)  
 
 <pre>
 <img src="https://www.google.com/s2/favicons?domain=bsky.app&size=16" alt="Bluesky icon"> Bluesky       :<a href="https://bsky.app/profile/neon-ai.art/">https://bsky.app/profile/neon-ai.art/</a>
