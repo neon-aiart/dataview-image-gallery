@@ -1,6 +1,6 @@
 # 🏖️ DataView Image Gallery v1.6-dev  
 
-<img src="./00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
+<img src="./assets/00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
 🇯🇵  
 
@@ -322,9 +322,9 @@ Even with alt text or sizes, no problem!
 
 ### 🎨 作品タイトル 03 / Artwork Title 03
 
-区切り線（`---` または `* * *` など）を入れることで、次のカードとして独立するよ🪤
+区切り線（ --- / *** / - - - / * * * ）を入れることで、次のカードとして独立するよ🪤
 
-Inserting horizontal dividers (like `---` or `* * *`) separates content into its own independent card!
+Inserting horizontal dividers ( --- or *** or - - - or * * * ) separates content into its own independent card!
 
 ![](https://example.com/image4.png)
 
@@ -336,7 +336,45 @@ No problem with alt text or sizes in Markdown format too!
 
 * * *
 
+### 🎨 作品タイトル 04 / Artwork Title 04
+
+<img src="https://example.com/cover.png">
+<img src="https://example.com/variant1.png" hidden>
+<img src="https://example.com/variant2.png" hidden>
+
+HTMLの `hidden` 属性（`<img src="..." hidden>`）を付けた画像は、元ノートのプレビューでは非表示になりますが
+ギャラリー側ではそのまま１枠（最大10枚）の中に読み込まれるため、切り替えて表示できます✨
+「元ノートには２枚だけ表示して残りは隠す」など、プレビューの見た目を調整したい時に便利です🔀
+
+Images with the HTML `hidden` attribute (`<img src="..." hidden>`) are hidden in your original note preview,
+but the gallery still loads them into the block (up to 10 images total) so you can view them in the slider!
+Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep your note layout clean!
+
+* * *
+
 ```
+
+> [!TIP] カード化を回避する区切り線  
+> Markdown上で区切り線を表現しつつ、カード枠として認識させたくない（グループ化を回避したい）場合は  
+> 上の４パターンから意図的に外した記号を使用します  
+> 
+> * ４つ以上の記号: ----, ****  
+> * アンダースコア: ___, _ _ _  
+> * スペースの数が異なる: - --, -  -  -  
+> 
+> など、これらはカード判定（`hrRegex`）にヒットしないため  
+> カード枠で区切らずにノート上の区切り線として自由に配置できます
+
+> [!TIP] Bypassing Card Creation with Dividers
+> If you want to render horizontal rules in Markdown without grouping items into a card, 
+> use any syntax that intentionally avoids the four trigger patterns above.
+> 
+> * 4 or more symbols: `----`, `****`
+> * Underscores: `___`, `_ _ _`
+> * Non-matching spacing: `- --`, `-  -  -`
+> 
+> Since these do not match the card delimiter logic (`hrRegex`), 
+> they will simply render as standard horizontal dividers without creating a card frame.
 
 ---
 
@@ -446,19 +484,12 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 ### v1.6 and later (Upcoming Tasks)  
 
 ☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
-
 <!-- ☑️ yamlにdebugを追加 -->
 
 (backlog)  
 
-* [ ] 枠を列に変更  
 * [ ] 保管庫と並び替えと列をアイコンフォントに変更  
 * [ ] ワンクリックで追加できるボタンを追加  
-
-* [ ] インフォ: 日本語・英語・ロシア語・スペイン語・中国語・韓国語・ポルトガル語・インドネシア語  
-
-* [ ] READMEに応用バリエーションについてを追記  
-* [ ] READMEに元ノートのリーディングビューに表示しない hidden についてを追記  
 
 * [ ] ファイル名を見出しにする  
 
