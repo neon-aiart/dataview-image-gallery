@@ -1,4 +1,4 @@
-# 🏖️ DataView Image Gallery v1.5  
+# 🏖️ DataView Image Gallery v1.6  
 
 <img src="./assets/00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
@@ -16,7 +16,7 @@ A plugin-grade, feature-rich image gallery script for Obsidian built with Datavi
 It automatically extracts images from notes within a specified folder (or your entire Vault), associates them with their corresponding headings, and displays them as a clean card grid.  
 Enjoy a seamless browsing experience with carousel album views (with dot indicators) for multiple images under a single heading, full keyboard-driven lightbox navigation, and interactive controls.  
 
-⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)
+⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)  
 
 <br clear="right">  
 
@@ -29,6 +29,13 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 <details><summary>
   🌐 Other Language Version
 </summary>
+« <a href="./assets/dataview-image-gallery-info-jp.png">🇯🇵 JP</a> /
+  <a href="./assets/dataview-image-gallery-info-en.png">🇺🇸 🇬🇧 EN</a> /
+  <a href="./assets/dataview-image-gallery-info-es.png">🇪🇸 ES</a> /
+  <a href="./assets/dataview-image-gallery-info-cn.png">🇨🇳 CN</a> /
+  <a href="./assets/dataview-image-gallery-info-kr.png">🇰🇷 KR</a> /
+  <a href="./assets/dataview-image-gallery-info-pt.png">🇧🇷 🇵🇹 PT</a> /
+  <a href="./assets/dataview-image-gallery-info-id.png">🇮🇩 ID</a> »  
 <img src="https://info-pick.neon-aiillust.workers.dev/dataview-image-gallery?details" alt="infographic details" width="100%">
 </details>
 
@@ -52,7 +59,7 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 ### 🍹 リッチで直感的なコントロールバー  
 
-* **インタラクティブな設定変更**: 列ごとの枠数（1〜10）、ソート基準（ファイル名/作成日時/更新日時）、昇順/降順を画面上のボタンからいつでも変更できます  
+* **インタラクティブな設定変更**: 列数（1〜10）、並び替え（ファイル名/作成日時/更新日時）、昇順/降順を画面上のボタンからいつでも変更できます  
 * **フォルダ切替機能**: セレクトボックスから保管庫内の別フォルダへジャンプ  
   * 主要な不要なフォルダ（`.obsidian`、`trash` など）はNGフォルダ（除外）に設定済み  
 * **スマート検索フィルター**: 正規表現対応の検索窓を搭載  
@@ -315,9 +322,9 @@ Even with alt text or sizes, no problem!
 
 ### 🎨 作品タイトル 03 / Artwork Title 03
 
-区切り線（`---` または `* * *` など）を入れることで、次のカードとして独立するよ🪤
+区切り線（ --- / *** / - - - / * * * ）を入れることで、次のカードとして独立するよ🪤
 
-Inserting horizontal dividers (like `---` or `* * *`) separates content into its own independent card!
+Inserting horizontal dividers ( --- or *** or - - - or * * * ) separates content into its own independent card!
 
 ![](https://example.com/image4.png)
 
@@ -329,7 +336,45 @@ No problem with alt text or sizes in Markdown format too!
 
 * * *
 
+### 🎨 作品タイトル 04 / Artwork Title 04
+
+<img src="https://example.com/cover.png">
+<img src="https://example.com/variant1.png" hidden>
+<img src="https://example.com/variant2.png" hidden>
+
+HTMLの `hidden` 属性（`<img src="..." hidden>`）を付けた画像は、元ノートのプレビューでは非表示になりますが
+ギャラリー側ではそのまま１枠（最大10枚）の中に読み込まれるため、切り替えて表示できます✨
+「元ノートには２枚だけ表示して残りは隠す」など、プレビューの見た目を調整したい時に便利です🔀
+
+Images with the HTML `hidden` attribute (`<img src="..." hidden>`) are hidden in your original note preview,
+but the gallery still loads them into the block (up to 10 images total) so you can view them in the slider!
+Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep your note layout clean!
+
+* * *
+
 ```
+
+> [!TIP] カード化を回避する区切り線  
+> Markdown上で区切り線を表現しつつ、カード枠として認識させたくない（グループ化を回避したい）場合は  
+> 上の４パターンから意図的に外した記号を使用します  
+> 
+> * ４つ以上の記号: ----, ****  
+> * アンダースコア: ___, _ _ _  
+> * スペースの数が異なる: - --, -  -  -  
+> 
+> など、これらはカード判定（`hrRegex`）にヒットしないため  
+> カード枠で区切らずにノート上の区切り線として自由に配置できます
+
+> [!TIP] Bypassing Card Creation with Dividers
+> If you want to render horizontal rules in Markdown without grouping items into a card, 
+> use any syntax that intentionally avoids the four trigger patterns above.
+> 
+> * 4 or more symbols: `----`, `****`
+> * Underscores: `___`, `_ _ _`
+> * Non-matching spacing: `- --`, `-  -  -`
+> 
+> Since these do not match the card delimiter logic (`hrRegex`), 
+> they will simply render as standard horizontal dividers without creating a card frame.
 
 ---
 
@@ -436,8 +481,14 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 
 ## 📝 更新履歴 (Changelog)  
 
-### v1.6 and later (Upcoming Tasks)  
+### v1.7 and later (Upcoming Tasks / Backlog)  
 
+* [ ] ワンクリックで追加できるボタン  
+* [ ] ファイルごとでアコーディオン  
+
+Work in Progress...  
+
+<!--
 No Tasks...  
 
 **本スクリプトは本バージョンをもって機能的に完成しています。**  
@@ -445,11 +496,22 @@ No Tasks...
 
 **This script is functionally complete as of this version.**  
 There are no planned feature updates at this time, but bug reports will be addressed as needed.  
+-->
 
-### v1.5  (Current Release)  
+### v1.6 (Current Release)  
+
+✅ 保管庫と並び替えと列数のテキストをアイコンに変更  
+✅ 並び替えのファイル名/作成日時/更新日時のセレクトボックスをアイコン（トグル）に変更  
+✅ 目次 (TOC) フローティングボタンを追加  
+☑️ 🔔更新通知を追加  
+
+☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
+☑️ yamlにdebugを追加  
+
+### v1.5  
 
 ✅ ブロック化：１つの見出しにつき10枚までの複数画像に対応  
-  &emsp; ☑️ 切り替えボタンとドットの実装  
+  &emsp; ☑️ 画像一覧で切り替えボタンとドットの実装  
   &emsp; ☑️ 拡大表示でも複数画像の切り替えボタンとドットを実装  
 ☑️ 拡大表示でブロックの切り替えボタン（←／→）を実装  
 ✅ NGフォルダを追加  
@@ -469,7 +531,7 @@ There are no planned feature updates at this time, but bug reports will be addre
 
 ### v1.2 (UnReleased)  
 
-✅ 列ごとの枠数を 1～10 で変更  
+✅ 列数を 1～10 で変更  
 ✅ 画像クリックで拡大表示  
 ☑️ 画像がない（srcが空欄の）カードをスキップ  
 
@@ -551,6 +613,10 @@ With 1,500+ lines of robust architecture, intuitive UI controls, and flawless ha
 * **Special Thanks**:  
   * **Knowledge Base Platform**: [Obsidian](https://obsidian.md/)  
   * **Dataview Plugin Architect**: Michael Brenan ([DataView](https://github.com/blacksmithgu/obsidian-dataview))  
+  * **Icon Libraries & Resources**:  
+    * **The World’s Popular Icon Toolkit**: [Font Awesome Free](https://fontawesome.com/search?ic=free-collection)  
+    * **Universal UI Symbol System**: [Google Material Symbols](https://fonts.google.com/icons)  
+    * **Next-Generation Open Source Icon Engine**: [Lucide Icons](https://lucide.dev/icons/)  
 
 <pre>
 <img src="https://www.google.com/s2/favicons?domain=bsky.app&size=16" alt="Bluesky icon"> Bluesky       :<a href="https://bsky.app/profile/neon-ai.art/">https://bsky.app/profile/neon-ai.art/</a>

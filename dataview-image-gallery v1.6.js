@@ -1,27 +1,39 @@
 /**
  * ==============================================================================
- * 🏖️ DataView Image Gallery v1.5
+ * 🏖️ DataView Image Gallery v1.6
  * ==============================================================================
  * Copyright (c) 2026 ねおん (Neon)
  * https://github.com/neon-aiart/dataview-image-gallery
  * Licensed under the PolyForm Noncommercial License 1.0.0.
  * ==============================================================================
+ * 🫧 Icon Libraries & Licenses:
+ * - Font Awesome Free v7.3.1 (CC BY 4.0): https://fontawesome.com/search?ic=free-collection
+ *   - ©️ 2026 Fonticons, Inc.: https://fontawesome.com/license/free
+ * - Google Material Symbols (Apache 2.0): https://fonts.google.com/icons
+ *   - ©️ Google LLC: https://www.apache.org/licenses/LICENSE-2.0
+ * - Lucide Icons (ISC): https://lucide.dev/icons/
+ *   - ©️ Lucide Contributors: https://lucide.dev/license
+ * ==============================================================================
  */
 
-const SCRIPT_VERSION = '1.5';
+const SCRIPT_VERSION = '1.6';
+const STORAGE_KEY = "dataview_image_gallery";
+const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24時間（ミリ秒）
+const VERSION_CHECK = true;
 
-const DEBUG = false;
+const DEFAULT_DEBUG = false;
 
 // --- 1. デフォルト値の定義 ---
 const DEFAULT_SORT_BY = 'name';                  // ソート基準 [name]: 'name' (ファイル名) | 'ctime' (作成日時) | 'mtime' (更新日時)
 const DEFAULT_IS_ASCENDING = false;              // ソート順 [false]: false = 降順 (Z-A / 新しい順) | true = 昇順 (A-Z / 古い順)
-const DEFAULT_COLUMNS = 5;                       // １列に並べるカードの数 [5]
+const DEFAULT_COLUMNS = 5;                       // カードの列の数 [5]
 const DEFAULT_MIN_WIDTH = 100;                   // カードの最小幅 [100] (10～720)
 const DEFAULT_MAX_WIDTH = 640;                   // カードの最大幅 [640] (100～2496)
 const DEFAULT_FOLDER = dv.current().file.folder; // デフォルトはカレントフォルダ
 const DEFAULT_HEADER_LEVELS = [3, 4, ];          // デフォルトの見出しは H3 と H4 ([3, 4, ])
 const DEFAULT_FILTER_QUERY = "";                 // 絞り込み
 const DEFAULT_FILTER_INCLUDE = true;             // デフォルトは「含む(緑)」
+const DEFAULT_ALL_HR_MODE = false;               // すべての区切り線をブロック化
 
 // 一覧から除外するNGフォルダリスト: 完全一致、または部分一致で弾くフォルダ名・パスを指定
 const DEFAULT_NG_FOLDERS = [
@@ -37,18 +49,13 @@ const DEFAULT_NG_FOLDERS = [
 
 // --- 2. 自分自身のYAMLプロパティを取得 ---
 const currentNote = dv.current();
+const DEBUG = currentNote?.debug ?? DEFAULT_DEBUG;
 
 // YAMLから配列またはカンマ区切り文字列を取得してキレイな配列に変換するヘルパー
 const parseNgFolders = (rawVal) => {
-    if (!rawVal) {
-        return [];
-    }
-    if (Array.isArray(rawVal)) {
-        return rawVal.map(item => String(item).trim()).filter(Boolean);
-    }
-    if (typeof rawVal === "string") {
-        return rawVal.split(",").map(item => item.trim()).filter(Boolean);
-    }
+    if (!rawVal) return [];
+    if (Array.isArray(rawVal)) return rawVal.map(item => String(item).trim()).filter(Boolean);
+    if (typeof rawVal === "string") return rawVal.split(",").map(item => item.trim()).filter(Boolean);
     return [String(rawVal).trim(),];
 };
 
@@ -56,10 +63,7 @@ const yamlNg = parseNgFolders(currentNote.ng_folders);
 
 // デフォルトとユーザー指定のYAMLを統合（重複を除去）
 const NG_FOLDERS = Array.from(new Set([...DEFAULT_NG_FOLDERS, ...yamlNg,]));
-
-if (DEBUG) {
-    console.log("[DEBUG] NGフォルダリスト:", NG_FOLDERS);
-}
+if (DEBUG) console.log("[DEBUG] NGフォルダリスト:", NG_FOLDERS);
 
 // ソート基準
 let currentSortBy = currentNote.sortby || currentNote.sort_order_by || DEFAULT_SORT_BY;
@@ -88,28 +92,25 @@ let cardMaxWidth = `${cardMaxWidthNum}px`;
 
 // YAMLプロパティからの読み込み
 let rawFolder = currentNote.folder !== undefined ? String(currentNote.folder).trim() : DEFAULT_FOLDER;
-// --- 1. Obsidianのメタデータキャッシュから「生のYAML文字列」を直接取得 ---
-const file = app.vault.getAbstractFileByPath(dv.current().file.path);
-const cache = app.metadataCache.getFileCache(file);
-const rawFrontmatter = cache?.frontmatter || {};
-// 生の値（ユーザーがYAMLに書いたそのままのテキスト）を取得
-let rawFilterQuery = rawFrontmatter.filter_query;
-// --- 2. あとは「文字列化してtrimする」だけの超シンプル一発処理 ---
-let currentFilterQuery = DEFAULT_FILTER_QUERY;
-if (rawFilterQuery !== undefined && rawFilterQuery !== null) {
-    // 数値でも日付風文字列でも、生テキストとして一発で安全に文字列化！
-    currentFilterQuery = String(rawFilterQuery).trim();
+
+// --- Obsidianのメタデータキャッシュから「生のYAML文字列」を直接取得 ---
+function getRawYamlString(fieldName, defaultValue = "") {
+    const file = app.vault.getAbstractFileByPath(dv.current().file.path);
+    const rawValue = app.metadataCache.getFileCache(file)?.frontmatter?.[fieldName];
+    return (rawValue !== undefined && rawValue !== null) ? String(rawValue).trim() : defaultValue;
 }
-let rawFilterMode = currentNote.filter_mode;
+
+// ① クエリ文字列：Dataviewのお節介を回避して生のまま取得
+let currentFilterQuery = getRawYamlString("filter_query", DEFAULT_FILTER_QUERY);
+// ② モード判定：booleanの解釈は Dataview(dv.current) に任せる
+const rawFilterMode = currentNote.filter_mode;
 let currentFilterIncludeMode = DEFAULT_FILTER_INCLUDE;
 if (typeof rawFilterMode === "boolean") {
     currentFilterIncludeMode = rawFilterMode; // true / false
 } else if (typeof rawFilterMode === "string") {
     currentFilterIncludeMode = (rawFilterMode.toLowerCase() !== "exclude"); // "exclude" 以外はすべて true
 }
-if (DEBUG) {
-    console.log("YAML読み込み結果:", currentFilterQuery, currentFilterIncludeMode);
-}
+if (DEBUG) console.log("YAML読み込み結果:", currentFilterQuery, currentFilterIncludeMode);
 
 // --- Vault内に存在する全フォルダのリストを取得＆フィルタリング ---
 const allFolders = app.vault.getAllLoadedFiles()
@@ -173,9 +174,7 @@ const parseHeaderLevels = (input) => {
                 if (!isNaN(start) && !isNaN(end)) {
                     let min = Math.min(start, end);
                     let max = Math.max(start, end);
-                    for (let i = min; i <= max; i++) {
-                        levels.push(i);
-                    }
+                    for (let i = min; i <= max; i++) levels.push(i);
                 }
             } else {
                 // 3. 単一数値 (例: "2" ➔ 2)
@@ -195,6 +194,9 @@ const targetHeaderLevels = parseHeaderLevels(rawHeader);
 
 // 現在選択されているレベル配列（ステート変数）
 let currentHeaderLevels = [...targetHeaderLevels, ];
+
+// すべての区切り線
+let hrMode = currentNote.all_hr_mode || DEFAULT_ALL_HR_MODE;
 
 let rawPages = [];
 
@@ -216,10 +218,38 @@ controlBar.style.backgroundColor = "var(--background-secondary)";
 controlBar.style.borderRadius = "6px";
 controlBar.style.fontSize = "0.9em";
 
+// 🔔 バージョンチェックを実行し、新バージョンがあれば右端にボタンを追加
+checkForUpdates().then((newVersion) => {
+    if (!newVersion) return;
+
+    const updateBadge = document.createElement("a");
+    updateBadge.href = "https://github.com/neon-aiart/dataview-image-gallery/releases/latest";
+    updateBadge.target = "_blank";
+    // updateBadge.title = `新しいバージョン (${newVersion}) が利用可能です！クリックしてGitHubを開く`;
+    updateBadge.title = `New version (${newVersion}) available! Click to open GitHub`;
+    updateBadge.innerText = `🔔`;
+
+    // 右端に押し出すスタイル
+    updateBadge.style.marginLeft = "auto";
+    updateBadge.style.padding = "4px 8px";
+    updateBadge.style.backgroundColor = "var(--interactive-accent)";
+    updateBadge.style.color = "var(--text-on-accent)";
+    updateBadge.style.borderRadius = "4px";
+    updateBadge.style.fontWeight = "bold";
+    updateBadge.style.fontSize = "0.85em";
+    updateBadge.style.textDecoration = "none";
+    updateBadge.style.cursor = "pointer";
+
+    controlBar.appendChild(updateBadge);
+});
+
 // --- コントロールバーに「フォルダ選択」を追加 ---
-const folderLabel = document.createElement("label");
-folderLabel.textContent = " フォルダ: ";
-folderLabel.style.fontWeight = "bold";
+const SVG_FOLDER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16" fill="currentColor">><path d="M128 96C92.7 96 64 124.7 64 160L64 480C64 515.3 92.7 544 128 544C128 561.7 142.3 576 160 576C177.7 576 192 561.7 192 544L448 544C448 561.7 462.3 576 480 576C497.7 576 512 561.7 512 544C547.3 544 576 515.3 576 480L576 160C576 124.7 547.3 96 512 96L128 96zM320 320C320 284.7 291.3 256 256 256C220.7 256 192 284.7 192 320C192 355.3 220.7 384 256 384C291.3 384 320 355.3 320 320zM128 320C128 249.3 185.3 192 256 192C326.7 192 384 249.3 384 320C384 390.7 326.7 448 256 448C185.3 448 128 390.7 128 320zM512 272C512 289.8 502.3 305.3 488 313.6L488 392C488 405.3 477.3 416 464 416C450.7 416 440 405.3 440 392L440 313.6C425.7 305.3 416 289.8 416 272C416 245.5 437.5 224 464 224C490.5 224 512 245.5 512 272z"/></svg>`;
+
+const folderLabel = document.createElement("span");
+folderLabel.style.display = "inline-flex";
+folderLabel.style.alignItems = "center";
+folderLabel.innerHTML = SVG_FOLDER + ":";
 
 const folderSelect = document.createElement("select");
 folderSelect.style.padding = "4px 8px";
@@ -230,9 +260,7 @@ folderSelect.style.border = "1px solid var(--background-modifier-border)";
 const defaultOption = document.createElement("option");
 defaultOption.value = "";
 defaultOption.textContent = "（Vault全体）";
-if (targetFolder === "") {
-    defaultOption.selected = true;
-}
+if (targetFolder === "") defaultOption.selected = true;
 folderSelect.appendChild(defaultOption);
 
 // Vault内の全フォルダを選択肢として追加（アルファベット順にソート）
@@ -240,46 +268,76 @@ allFolders.sort().forEach(folderPath => {
     let opt = document.createElement("option");
     opt.value = folderPath;
     opt.textContent = folderPath;
-    if (folderPath === targetFolder) {
-        opt.selected = true;
-    }
+    if (folderPath === targetFolder) opt.selected = true;
     folderSelect.appendChild(opt);
 });
 
 // フォルダ変更時のイベント処理
 folderSelect.addEventListener("change", (e) => {
     targetFolder = e.target.value;
-    if (DEBUG) {
-        console.log(`[DEBUG] フォルダ変更: "${targetFolder}"`);
-    }
+    if (DEBUG) console.log(`[DEBUG] フォルダ変更: "${targetFolder}"`);
     // 選択されたフォルダを基準に pages を再取得
     updatePagesAndRender();
 });
 
-// ソート基準
-const selectSortBy = document.createElement("select");
-selectSortBy.style.padding = "4px 8px";
-selectSortBy.style.borderRadius = "4px";
-selectSortBy.style.border = "1px solid var(--background-modifier-border)";
-selectSortBy.style.backgroundColor = "var(--background-primary)";
-selectSortBy.style.color = "var(--text-normal)";
-selectSortBy.innerHTML = `
-    <option value="name" ${currentSortBy === 'name' ? 'selected' : ''}>ファイル名</option>
-    <option value="ctime" ${currentSortBy === 'ctime' ? 'selected' : ''}>作成日時</option>
-    <option value="mtime" ${currentSortBy === 'mtime' ? 'selected' : ''}>更新日時</option>
-`;
-selectSortBy.addEventListener("change", (e) => {
-    currentSortBy = e.target.value;
-    if (DEBUG) {
-        console.log(`[DEBUG] ソート基準変更: ${currentSortBy}`);
+// --- 並び替え用の SVG アイコンを作成 ---
+const SVG_SORT = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20px" height="20px" fill="currentColor"><path d="m80-280 150-400h86l150 400h-82l-34-96H196l-32 96H80Zm140-164h104l-48-150h-6l-50 150Zm328 164v-76l202-252H556v-72h282v76L638-352h202v72H548ZM360-760l120-120 120 120H360ZM480-80 360-200h240L480-80Z"/></svg>`;
+
+const sortIcon = document.createElement("span");
+sortIcon.style.display = "inline-flex";
+sortIcon.style.alignItems = "center";
+sortIcon.style.color = "var(--text-muted)"; // 少し落ち着いた文字色に
+sortIcon.innerHTML = SVG_SORT + ":";
+
+// --- ソート基準切替ボタン（ファイル名 → 作成日時 → 更新日時） ---
+const btnSortBy = document.createElement("button");
+btnSortBy.style.padding = "4px 8px";
+btnSortBy.style.borderRadius = "4px";
+btnSortBy.style.border = "1px solid var(--background-modifier-border)";
+btnSortBy.style.backgroundColor = "var(--interactive-normal)";
+btnSortBy.style.color = "var(--text-normal)";
+btnSortBy.style.cursor = "pointer";
+btnSortBy.style.display = "inline-flex";
+btnSortBy.style.alignItems = "center";
+btnSortBy.style.justifyContent = "center";
+
+// ボタンの表示（アイコンとツールチップ）を更新する関数
+const SVG_SORT_NAME = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" height="18px" fill="currentColor"><path d="M680-360q-17 0-28.5-11.5T640-400v-160q0-17 11.5-28.5T680-600h120q17 0 28.5 11.5T840-560v40h-60v-20h-80v120h80v-20h60v40q0 17-11.5 28.5T800-360H680Zm-300 0v-240h160q17 0 28.5 11.5T580-560v40q0 17-11.5 28.5T540-480q17 0 28.5 11.5T580-440v40q0 17-11.5 28.5T540-360H380Zm60-150h80v-30h-80v30Zm0 90h80v-30h-80v30Zm-320 60v-200q0-17 11.5-28.5T160-600h120q17 0 28.5 11.5T320-560v200h-60v-60h-80v60h-60Zm60-120h80v-60h-80v60Z"/></svg>`;
+const SVG_SORT_CTIME = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" height="18px" fill="currentColor"><path d="m787-145 28-28-75-75v-112h-40v128l87 87Zm-587 25q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v268q-19-9-39-15.5t-41-9.5v-243H200v560h242q3 22 9.5 42t15.5 38H200Zm0-120v40-560 243-3 280Zm80-40h163q3-21 9.5-41t14.5-39H280v80Zm0-160h244q32-30 71.5-50t84.5-27v-3H280v80Zm0-160h400v-80H280v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-440Z"/></svg>`;
+const SVG_SORT_MTIME = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18px" height="18px" fill="currentColor"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v200h-80v-40H200v400h280v80H200Zm0-560h560v-80H200v80Zm0 0v-80 80ZM560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"/></svg>`;
+
+const updateSortByButton = () => {
+    if (currentSortBy === 'name') {
+        btnSortBy.innerHTML = SVG_SORT_NAME;
+        btnSortBy.title = "ファイル名 (File Name)";
+    } else if (currentSortBy === 'ctime') {
+        btnSortBy.innerHTML = SVG_SORT_CTIME;
+        btnSortBy.title = "作成日時 (Created Date)";
+    } else {
+        btnSortBy.innerHTML = SVG_SORT_MTIME;
+        btnSortBy.title = "更新日時 (Modified Date)";
     }
+};
+
+updateSortByButton(); // 初回表示
+
+// クリックイベント：名 → 作成 → 更新 → 名 ... とトグルする
+btnSortBy.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (currentSortBy === 'name') {
+        currentSortBy = 'ctime';
+    } else if (currentSortBy === 'ctime') {
+        currentSortBy = 'mtime';
+    } else {
+        currentSortBy = 'name';
+    }
+
+    updateSortByButton();
+    if (DEBUG) console.log(`[DEBUG] ソート基準変更: ${currentSortBy}`);
     renderGallery();
 });
 
-selectSortBy.addEventListener("click", (e) => e.stopPropagation());
-
 // --- 昇順降順SVGアイコンの定義 ---
-// ©️ Font Awesome Free v7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.
 const SVG_ASC = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16" fill="currentColor"><path d="M230.6 390.6l-80 80c-12.5 12.5-32.8 12.5-45.3 0l-80-80c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L96 370.7 96 64c0-17.7 14.3-32 32-32s32 14.3 32 32l0 306.7 25.4-25.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3zm182-340.9c50.7 101.3 77.3 154.7 80 160 7.9 15.8 1.5 35-14.3 42.9s-35 1.5-42.9-14.3l-7.2-14.3-88.4 0-7.2 14.3c-7.9 15.8-27.1 22.2-42.9 14.3s-22.2-27.1-14.3-42.9c2.7-5.3 29.3-58.7 80-160 5.4-10.8 16.5-17.7 28.6-17.7s23.2 6.8 28.6 17.7zM384 135.6l-20.2 40.4 40.4 0-20.2-40.4zM288 320c0-17.7 14.3-32 32-32l128 0c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9L397.3 416 448 416c17.7 0 32 14.3 32 32s-14.3 32-32 32l-128 0c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9l73.4-73.4-50.7 0c-17.7 0-32-14.3-32-32z"/></svg>`;
 const SVG_DESC = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16" fill="currentColor"><path d="M230.6 390.6l-80 80c-12.5 12.5-32.8 12.5-45.3 0l-80-80c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L96 370.7 96 64c0-17.7 14.3-32 32-32s32 14.3 32 32l0 306.7 25.4-25.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3zM288 64c0-17.7 14.3-32 32-32l128 0c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9L397.3 160 448 160c17.7 0 32 14.3 32 32s-14.3 32-32 32l-128 0c-12.9 0-24.6-7.8-29.6-19.8s-2.2-25.7 6.9-34.9L370.8 96 320 96c-17.7 0-32-14.3-32-32zM412.6 273.7l80 160c7.9 15.8 1.5 35-14.3 42.9s-35 1.5-42.9-14.3l-7.2-14.3-88.4 0-7.2 14.3c-7.9 15.8-27.1 22.2-42.9 14.3s-22.2-27.1-14.3-42.9l80-160c5.4-10.8 16.5-17.7 28.6-17.7s23.2 6.8 28.6 17.7zM384 359.6l-20.2 40.4 40.4 0-20.2-40.4z"/></svg>`;
 
@@ -310,7 +368,16 @@ btnOrder.addEventListener("click", () => {
     renderGallery(); // ギャラリーを再描画
 });
 
-// 列ごとの枠数 (1～10)
+// --- 列数用の SVG アイコン ---
+const SVG_COLUMNS = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20px" height="20px" fill="currentColor"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>`;
+
+const columnsIcon = document.createElement("span");
+columnsIcon.style.display = "inline-flex";
+columnsIcon.style.alignItems = "center";
+columnsIcon.style.color = "var(--text-muted)";
+columnsIcon.innerHTML = SVG_COLUMNS + ":";
+
+// 列数 (1～10)
 const selectColumns = document.createElement("select");
 selectColumns.style.padding = "4px 8px";
 selectColumns.style.borderRadius = "4px";
@@ -327,9 +394,7 @@ for (let c = 1; c <= 10; c++) {
 selectColumns.innerHTML = colOptions;
 selectColumns.addEventListener("change", (e) => {
     currentColumns = parseInt(e.target.value, 10);
-    if (DEBUG) {
-        console.log(`[DEBUG] 列ごとの枠数変更:`, currentColumns);
-    }
+    if (DEBUG) console.log(`[DEBUG] 列ごとの枠数変更:`, currentColumns);
     renderGallery();
 });
 
@@ -356,7 +421,7 @@ btnHeaderToggle.style.color = "var(--text-normal)";
 btnHeaderToggle.style.cursor = "pointer";
 btnHeaderToggle.style.display = "inline-flex";
 btnHeaderToggle.style.alignItems = "center";
-btnHeaderToggle.title = "対象見出しレベルの切替";
+btnHeaderToggle.title = "見出しレベル (Header Level)";
 btnHeaderToggle.insertAdjacentHTML("afterbegin", SVG_HEADER_MAIN);
 
 // ボタンの凹み（アクティブ）見た目を更新する関数
@@ -416,10 +481,8 @@ const headerButtons = {};
 
     btn.addEventListener("click", () => {
         if (currentHeaderLevels.includes(lvl)) {
-            // 選択解除（ただし最後1つは解除させない安全弁）
-            if (currentHeaderLevels.length > 1) {
-                currentHeaderLevels = currentHeaderLevels.filter(h => h !== lvl);
-            }
+            // 選択解除（ただし最後１つは解除させない安全弁）
+            if (currentHeaderLevels.length > 1) currentHeaderLevels = currentHeaderLevels.filter(h => h !== lvl);
         } else {
             // 選択追加
             currentHeaderLevels.push(lvl);
@@ -428,9 +491,7 @@ const headerButtons = {};
 
         // 全ボタンのスタイル更新と再描画
         Object.values(headerButtons).forEach(b => b.updateStyle());
-        if (DEBUG) {
-            console.log(`[DEBUG] 抽出見出しレベル変更:`, currentHeaderLevels);
-        }
+        if (DEBUG) console.log(`[DEBUG] 抽出見出しレベル変更:`, currentHeaderLevels);
         renderGallery();
     });
 
@@ -454,7 +515,7 @@ btnFilterToggle.style.color = "var(--text-normal)";
 btnFilterToggle.style.cursor = "pointer";
 btnFilterToggle.style.display = "inline-flex";
 btnFilterToggle.style.alignItems = "center";
-btnFilterToggle.title = "絞り込みフィルターの開閉";
+btnFilterToggle.title = "絞り込みフィルター (Regex Filter)";
 btnFilterToggle.insertAdjacentHTML("afterbegin", SVG_FILTER_TUNER);
 
 // ボタンの凹み（アクティブ）見た目を更新する関数
@@ -528,9 +589,7 @@ updateFilterButtonStyle();
 // リアルタイム検索とモード切替
 filterInput.addEventListener("input", (e) => {
     currentFilterQuery = e.target.value;
-    if (DEBUG) {
-        console.log(`[DEBUG] フィルタークエリ変更: "${currentFilterQuery}"`);
-    }
+    if (DEBUG) console.log(`[DEBUG] フィルタークエリ変更: "${currentFilterQuery}"`);
     renderGallery();
 });
 
@@ -540,8 +599,74 @@ btnFilterMode.addEventListener("click", () => {
     renderGallery();
 });
 
+// --- 画面右上に追従する「目次 (TOC) フローティングボタン」 ---
+const SVG_TOC = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="currentColor"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>`;
+
+// 1. フローティングボタン本体
+const btnToc = document.createElement("button");
+btnToc.style.position = "fixed";
+btnToc.style.top = "48px";          // 画面上から48px
+btnToc.style.right = "36px";        // 画面右から36px
+btnToc.style.padding = "4px 2px 2px 4px";
+btnToc.style.zIndex = "998";        // モーダル等よりは下に配置
+btnToc.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
+btnToc.style.color = "#ffffff";
+btnToc.style.border = "1px solid var(--background-modifier-border)";
+btnToc.style.borderRadius = "50%";
+btnToc.style.width = "44px";
+btnToc.style.height = "44px";
+btnToc.style.cursor = "pointer";
+btnToc.style.display = "none";      // 初期状態は非表示（2個以上の時に表示）
+btnToc.style.alignItems = "center";
+btnToc.style.justifyContent = "center";
+btnToc.style.boxShadow = "0 4px 10px rgba(0,0,0,0.4)";
+btnToc.style.transition = "transform 0.2s ease, background-color 0.2s ease";
+// btnToc.title = "目次 / Table of Contents";
+btnToc.innerHTML = SVG_TOC;
+
+// ホバーエフェクト
+btnToc.addEventListener("mouseenter", () => {
+    btnToc.style.backgroundColor = "var(--interactive-accent)";
+    btnToc.style.transform = "scale(1.1)";
+});
+btnToc.addEventListener("mouseleave", () => {
+    btnToc.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
+    btnToc.style.transform = "scale(1.0)";
+});
+
+// 2. ドロップダウンメニューのコンテナ
+const tocMenu = document.createElement("div");
+tocMenu.style.position = "fixed";
+tocMenu.style.top = "98px";         // ボタンの少し下に配置
+tocMenu.style.right = "30px";
+tocMenu.style.zIndex = "999";
+tocMenu.style.backgroundColor = "var(--background-secondary)";
+tocMenu.style.border = "1px solid var(--background-modifier-border)";
+tocMenu.style.borderRadius = "8px";
+tocMenu.style.padding = "8px 0";
+tocMenu.style.boxShadow = "0 6px 16px rgba(0,0,0,0.3)";
+tocMenu.style.display = "none";     // 初期状態は非表示
+tocMenu.style.maxHeight = "300px";  // 長くなりすぎないようスクロール化
+tocMenu.style.overflowY = "auto";
+tocMenu.style.minWidth = "180px";
+
+// ボタンクリックでメニューの開閉
+btnToc.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isVisible = tocMenu.style.display === "block";
+    tocMenu.style.display = isVisible ? "none" : "block";
+});
+
+// メニューの外側や画面のどこかをクリックしたらメニューを閉じる
+document.addEventListener("click", () => {
+    tocMenu.style.display = "none";
+});
+
+container.appendChild(btnToc);
+container.appendChild(tocMenu);
+
 // --- トップへ戻るフローティングボタン ---
-const SVG_TOP = `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>`;
+const SVG_TOP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20px" height="20px" fill="currentColor"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>`;
 
 const btnScrollTop = document.createElement("button");
 btnScrollTop.style.position = "fixed";
@@ -609,15 +734,15 @@ filterPanel.append(filterInput, btnFilterMode);
 // コントロールバーに追加
 controlBar.appendChild(folderLabel);
 controlBar.appendChild(folderSelect);
-controlBar.appendChild(document.createTextNode("並び替え: "));
-controlBar.appendChild(selectSortBy);
+controlBar.appendChild(sortIcon);
+controlBar.appendChild(btnSortBy);
 controlBar.appendChild(btnOrder);
 
 const spacer = document.createElement("span");
 spacer.style.margin = "0 3px";
 controlBar.appendChild(spacer);
 
-controlBar.appendChild(document.createTextNode("列ごとの枠: "));
+controlBar.appendChild(columnsIcon);
 controlBar.appendChild(selectColumns);
 controlBar.appendChild(btnHeaderToggle);
 controlBar.appendChild(btnFilterToggle);
@@ -809,24 +934,16 @@ const goToNextImg = () => {
 
 // --- 4. モーダル表示更新関数 ---
 const updateModalImage = () => {
-    if (allCardsData.length === 0) {
-        return;
-    }
+    if (allCardsData.length === 0) return;
 
     const currentCard = allCardsData[currentCardIndex];
     modalImages = currentCard.images;
 
     // 現在のインデックス範囲をガード
-    if (modalIndex >= modalImages.length) {
-        modalIndex = 0;
-    }
-    if (modalIndex < 0) {
-        modalIndex = modalImages.length - 1;
-    }
+    if (modalIndex >= modalImages.length) modalIndex = 0;
+    if (modalIndex < 0) modalIndex = modalImages.length - 1;
 
-    if (DEBUG) {
-        console.log(`[DEBUG] モーダル表示更新: Card [${currentCardIndex + 1}/${allCardsData.length}] ("${currentCard.title}"), Image [${modalIndex + 1}/${modalImages.length}]`);
-    }
+    if (DEBUG) console.log(`[DEBUG] モーダル表示更新: Card [${currentCardIndex + 1}/${allCardsData.length}] ("${currentCard.title}"), Image [${modalIndex + 1}/${modalImages.length}]`);
 
     modalImg.src = modalImages[modalIndex];
 
@@ -884,17 +1001,21 @@ const closeModal = () => {
 
 // [A] カード（枠）切り替え (画面端ボタン)
 modalBtnPrevCard.addEventListener("click", (e) => {
-    e.stopPropagation(); goToPrevCard();
+    e.stopPropagation();
+    goToPrevCard();
 });
 modalBtnNextCard.addEventListener("click", (e) => {
-    e.stopPropagation(); goToNextCard();
+    e.stopPropagation();
+    goToNextCard();
 });
 // [B] カード内画像切り替え (画像横の小ボタン)
 modalBtnPrevImg.addEventListener("click", (e) => {
-    e.stopPropagation(); goToPrevImg();
+    e.stopPropagation();
+    goToPrevImg();
 });
 modalBtnNextImg.addEventListener("click", (e) => {
-    e.stopPropagation(); goToNextImg();
+    e.stopPropagation();
+    goToNextImg();
 });
 // [C] モーダル背景または画像のクリックで閉じる
 modal.addEventListener("click", closeModal);
@@ -909,28 +1030,20 @@ modal.addEventListener("keydown", (e) => {
         e.preventDefault();
         // Ctrl押下、または画像1枚のみ、または1枚目の画像位置の場合 ➔ 前のカードへ
         if (isCtrlPressed || modalImages.length <= 1 || modalIndex === 0) {
-            if (DEBUG) {
-                console.log("[DEBUG] [Key] ArrowLeft -> 前のカードへ");
-            }
+            if (DEBUG) console.log("[DEBUG] [Key] ArrowLeft -> 前のカードへ");
             goToPrevCard();
         } else {
-            if (DEBUG) {
-                console.log("[DEBUG] [Key] ArrowLeft -> 前の画像へ");
-            }
+            if (DEBUG) console.log("[DEBUG] [Key] ArrowLeft -> 前の画像へ");
             goToPrevImg();
         }
     } else if (e.key === "ArrowRight") {
         e.preventDefault();
         // Ctrl押下、または画像1枚のみ、または最後の画像位置の場合 ➔ 次のカードへ
         if (isCtrlPressed || modalImages.length <= 1 || modalIndex === modalImages.length - 1) {
-            if (DEBUG) {
-                console.log("[DEBUG] [Key] ArrowRight -> 次のカードへ");
-            }
+            if (DEBUG) console.log("[DEBUG] [Key] ArrowRight -> 次のカードへ");
             goToNextCard();
         } else {
-            if (DEBUG) {
-                console.log("[DEBUG] [Key] ArrowRight -> 次の画像へ");
-            }
+            if (DEBUG) console.log("[DEBUG] [Key] ArrowRight -> 次の画像へ");
             goToNextImg();
         }
     } else if (e.key === "Escape") {
@@ -970,6 +1083,7 @@ const applyButtonStyle = (btn, isLeft) => {
     btn.style.borderRadius = "50%";
     btn.style.width = "44px";
     btn.style.height = "44px";
+    btn.style.padding = "1px 1px 3px 1px";
     btn.style.fontSize = "1.3em";
     btn.style.cursor = "pointer";
     btn.style.display = "none"; // 初期状態は非表示
@@ -1006,9 +1120,7 @@ applyButtonStyle(btnRight, false);
 // ボタンの表示/非表示判定
 const updateButtonVisibility = () => {
     const hasScrollableContent = galleryContainer.scrollWidth > galleryContainer.clientWidth + 5;
-    if (DEBUG) {
-        console.log(`[DEBUG] スクロール判定: scrollWidth(${galleryContainer.scrollWidth}) > clientWidth(${galleryContainer.clientWidth}) -> ボタン表示: ${hasScrollableContent}`);
-    }
+    if (DEBUG) console.log(`[DEBUG] スクロール判定: scrollWidth(${galleryContainer.scrollWidth}) > clientWidth(${galleryContainer.clientWidth}) -> ボタン表示: ${hasScrollableContent}`);
     if (!hasScrollableContent) {
         btnLeft.style.display = "none";
         btnRight.style.display = "none";
@@ -1057,9 +1169,8 @@ container.appendChild(carouselWrapper);
 
 // --- ギャラリーを再描画する関数 (複数画像・カルーセル対応版) ---
 const renderGallery = async () => {
-    if (DEBUG) {
-        console.time("[DEBUG] レンダリングにかかった時間だよ♪");
-    }
+    if (DEBUG) console.time("[DEBUG] レンダリングにかかった時間だよ♪");
+
     // ギャラリー表示エリアを一度クリア
     galleryContainer.innerHTML = "";
 
@@ -1069,20 +1180,12 @@ const renderGallery = async () => {
         let valB = b.file[currentSortBy];
 
         // 日時オブジェクト (DateTime) の場合はミリ秒数値に変換して比較
-        if (valA && typeof valA === 'object' && 'ts' in valA) {
-            valA = valA.ts;
-        }
-        if (valB && typeof valB === 'object' && 'ts' in valB) {
-            valB = valB.ts;
-        }
+        if (valA && typeof valA === 'object' && 'ts' in valA) valA = valA.ts;
+        if (valB && typeof valB === 'object' && 'ts' in valB) valB = valB.ts;
 
         // 文字列比較または数値比較
-        if (valA < valB) {
-            return currentIsAscending ? -1 : 1;
-        }
-        if (valA > valB) {
-            return currentIsAscending ? 1 : -1;
-        }
+        if (valA < valB) return currentIsAscending ? -1 : 1;
+        if (valA > valB) return currentIsAscending ? 1 : -1;
         return 0;
     });
 
@@ -1094,17 +1197,13 @@ const renderGallery = async () => {
         } else if (match1) {
             let cleanLink = match1.split("|")[0].trim();
             let file = app.metadataCache.getFirstLinkpathDest(cleanLink, notePath);
-            if (!file) {
-                file = app.vault.getAbstractFileByPath(cleanLink);
-            }
+            if (!file) file = app.vault.getAbstractFileByPath(cleanLink);
             return file ? app.vault.getResourcePath(file) : "";
         } else if (match3) {
             let src = match3;
             if (!src.startsWith("http://") && !src.startsWith("https://")) {
                 let file = app.metadataCache.getFirstLinkpathDest(src, notePath);
-                if (file) {
-                    src = app.vault.getResourcePath(file);
-                }
+                if (file) src = app.vault.getResourcePath(file);
             }
             return src;
         }
@@ -1120,7 +1219,10 @@ const renderGallery = async () => {
         let fileContent = await app.vault.adapter.read(path);
 
         // --- 1. 区切り線 (--- / *** / - - - / * * *) でブロック分割 ---
-        const hrRegex = /^(?:---|\*\*\*|- - -|\* \* \*)\s*$/gm;
+        let hrRegex = /^(?:---|\*\*\*|- - -|\* \* \*)\s*$/gm;
+        // すべての応用バリエーション
+        if (hrMode) hrRegex = /^(?:(?:\s*-\s*){3,}|(?:\s*\*\s*){3,}|(?:\s*_\s*){3,})$/gm;
+
         let blocks = [];
         let lastIndex = 0;
         let hrMatch;
@@ -1131,9 +1233,7 @@ const renderGallery = async () => {
         }
         blocks.push(fileContent.slice(lastIndex));
 
-        if (DEBUG) {
-            console.log(`[DEBUG] Parse Note: "${p.file.name}" -> ${blocks.length} ブロックに分割`);
-        }
+        if (DEBUG) console.log(`[DEBUG] Parse Note: "${p.file.name}" -> ${blocks.length} ブロックに分割`);
 
         // HTMLタグ / WikiLink形式(![[...]]) / 標準Markdown形式(![...](...)) をすべて抽出する正規表現
         const imgRegex = /<img[^>]+>|!\[\[([^\]]+)\]\]|!\[([^\]]*)\]\(([^)]+)\)/gi;
@@ -1141,9 +1241,7 @@ const renderGallery = async () => {
         // 見出しレベルに応じた正規表現パターンを動的生成（例: [2, 3, 4] ➔ /^(?:#{2}|#{3}|#{4})\s+(.*)$/gm）
         const headerPattern = currentHeaderLevels.map(lvl => `#{${lvl}}`).join('|');
         const titleRegex = new RegExp(`^(?:${headerPattern})\\s+(.*)$`, 'm');
-        if (DEBUG){
-            console.log("現在の見出しレベル:", currentHeaderLevels);
-        }
+        if (DEBUG) console.log("現在の見出しレベル:", currentHeaderLevels);
 
         // ブロックごとのカードデータリスト構築
         let cardDataList = [];
@@ -1151,9 +1249,7 @@ const renderGallery = async () => {
         for (let blockText of blocks) {
             // 画像抽出
             let imgMatches = [...blockText.matchAll(imgRegex),];
-            if (imgMatches.length === 0) { // 画像がないブロックは無視
-                continue;
-            }
+            if (imgMatches.length === 0) continue; // 画像がないブロックは無視
 
             let validImages = [];
             for (let m of imgMatches) {
@@ -1162,18 +1258,15 @@ const renderGallery = async () => {
                     validImages.push(src);
                 }
             }
-            if (validImages.length === 0) {
-                continue;
-            }
+            if (validImages.length === 0) continue;
 
             // 見出しタイトル抽出（ブロック内から最初にマッチした見出し）
             let titleMatch = blockText.match(titleRegex);
-            if (DEBUG) {
-                console.log(`[DEBUG] スキップ: 画像はあるが見出しが見つかりません (${path})`);
-            }
-            if (!titleMatch) {
-                continue; // 見出しがないブロックはギャラリー表示対象外としてスキップ
-            }
+            if (DEBUG) console.log(`[DEBUG] スキップ: 画像はあるが見出しが見つかりません (${path})`);
+
+            // 見出しがないブロックはギャラリー表示対象外としてスキップ
+            if (!titleMatch) continue;
+
             let rawTitle = titleMatch[1];
             let titleLine = rawTitle.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
@@ -1188,12 +1281,8 @@ const renderGallery = async () => {
                     isMatch = p.file.path.includes(filterQueryStr) || titleLine.includes(filterQueryStr);
                     console.warn("[GALLERY] フィルター正規表現のエラー。簡易文字列検索にフォールバックします:", e);
                 }
-                if (currentFilterIncludeMode && !isMatch) {
-                    continue;
-                }
-                if (!currentFilterIncludeMode && isMatch) {
-                    continue;
-                }
+                if (currentFilterIncludeMode && !isMatch) continue;
+                if (!currentFilterIncludeMode && isMatch) continue;
             }
 
             cardDataList.push({
@@ -1201,19 +1290,19 @@ const renderGallery = async () => {
                 titleLine: titleLine,
                 images: validImages, // １枚以上の画像URL配列
             });
-            if (DEBUG && cardDataList.length > 0) {
-                console.log(`[DEBUG] "${p.file.name}": ${cardDataList.length} 件のカードデータを生成`);
-            }
+            // if (DEBUG && cardDataList.length > 0) console.log(`[DEBUG] "${p.file.name}": ${cardDataList.length} 件のカードデータを生成`);
         }
 
-        if (cardDataList.length === 0) {
-            continue; // 表示できるカードが無ければセクションを作らない
-        }
+        // 表示できるカードが無ければセクションを作らない
+        if (cardDataList.length === 0) continue;
 
         totalCardCount += cardDataList.length;
 
         let fileSection = document.createElement("div");
         fileSection.style.marginBottom = "25px";
+
+        const sectionId = `gallery-section-${p.file.name.replace(/\s+/g, '-')}`;
+        fileSection.id = sectionId; // 各セクションに一意のIDをセット（ジャンプ用）
 
         // ノート名のヘッダー
         let headerTitle = p.file.name.length > 30 ? p.file.name.substring(0, 30) + '...' : p.file.name;
@@ -1277,9 +1366,7 @@ const renderGallery = async () => {
                 e.stopPropagation();
 
                 // エラープレースホルダー表示時はモーダルを開かない
-                if (imgEl.src.startsWith("data:image/svg+xml")) {
-                    return;
-                }
+                if (imgEl.src.startsWith("data:image/svg+xml")) return;
 
                 // 全カードリストを同期し、クリックされたカードのインデックスをセット
                 allCardsData = cardDataList;
@@ -1485,9 +1572,53 @@ const renderGallery = async () => {
 
         fileSection.appendChild(gridDiv);
         galleryContainer.appendChild(fileSection);
-        if (DEBUG) {
-            console.log(`[DEBUG] 処理完了: 合計 ${pages.length} つのノートから ${totalCardCount} 件のカードを生成しました`);
-        }
+        if (DEBUG) console.log(`[DEBUG] 処理完了: 合計 ${pages.length} つのノートから ${totalCardCount} 件のカードを生成しました`);
+    }
+
+    // --- 3. 目次（TOC）メニューの更新処理 ---
+    // 生成された fileSection の数をカウント
+    const sections = galleryContainer.querySelectorAll("[id^='gallery-section-']");
+
+    if (sections.length >= 2) {
+        // 2個以上あればボタンを表示
+        btnToc.style.display = "inline-flex";
+        tocMenu.innerHTML = ""; // メニューをリセット
+
+        sections.forEach((sec) => {
+            const h2 = sec.querySelector("h2");
+            if (!h2) return;
+
+            const item = document.createElement("div");
+            item.textContent = h2.textContent;
+            item.style.padding = "8px 16px";
+            item.style.fontSize = "1.0em";
+            item.style.cursor = "pointer";
+            item.style.color = "var(--text-normal)";
+            item.style.whiteSpace = "nowrap";
+            item.style.overflow = "hidden";
+            item.style.textOverflow = "ellipsis";
+
+            // ホバー時の見た目
+            item.addEventListener("mouseenter", () => {
+                item.style.backgroundColor = "var(--background-modifier-hover)";
+            });
+            item.addEventListener("mouseleave", () => {
+                item.style.backgroundColor = "transparent";
+            });
+
+            // クリックしたらそのセクションへスッとジャンプ！
+            item.addEventListener("click", (e) => {
+                e.stopPropagation();
+                sec.scrollIntoView({ behavior: "smooth", block: "start", });
+                tocMenu.style.display = "none"; // ジャンプしたらメニューを閉じる
+            });
+
+            tocMenu.appendChild(item);
+        });
+    } else {
+        // 1個以下の場合は非表示にしておく
+        btnToc.style.display = "none";
+        tocMenu.style.display = "none";
     }
 
     // ボタン表示状態更新
@@ -1524,9 +1655,7 @@ const renderGallery = async () => {
 
     // Obsidianに埋め込まれたWikiLink（[[...]]）をHTMLとして正しくプレビュー変換させる
     dv.paragraph("");
-    if (DEBUG) {
-        console.timeEnd("[DEBUG] レンダリングにかかった時間だよ♪");
-    }
+    if (DEBUG) console.timeEnd("[DEBUG] レンダリングにかかった時間だよ♪");
 };
 
 // --- ページ取得と描画を実行する関数 ---
@@ -1550,12 +1679,44 @@ const updatePagesAndRender = () => {
             );
         });
 
-    if (DEBUG) {
-        console.log(`[DEBUG] 取得ノート数: 該当 ${initialCount} 件 -> 除外後 ${rawPages.length} 件 (Target: "${targetFolder || 'Vault全体'}")`);
-    }
+    if (DEBUG) console.log(`[DEBUG] 取得ノート数: 該当 ${initialCount} 件 -> 除外後 ${rawPages.length} 件 (Target: "${targetFolder || 'Vault全体'}")`);
 
     renderGallery();
 };
+
+// 🔔 バージョンチェック
+async function checkForUpdates() {
+    if (!VERSION_CHECK || SCRIPT_VERSION.includes("-dev")) return;
+
+    // Obsidian環境（requestUrlが存在する）場合のみ実行
+    if (typeof requestUrl === "undefined") return;
+
+    const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const lastCheck = currentData.last_check;
+    const now = Date.now();
+
+    // 24時間経っていないなら終了
+    if (lastCheck && (now - lastCheck) <= CHECK_INTERVAL) return;
+
+    try {
+        const res = await requestUrl({
+            url: "https://api.github.com/repos/neon-aiart/dataview-image-gallery/releases/latest",
+        });
+
+        // チェックした時間を保存
+        currentData.last_check = now;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+
+        const latestVersion = res.json.tag_name;
+
+        if (`v${SCRIPT_VERSION}` !== latestVersion) {
+            console.log(`Update available: ${latestVersion}`);
+            return latestVersion; // 最新バージョン名を返す
+        }
+    } catch (e) {
+        // オフライン時などはエラーを出さずに静かにスルー
+    }
+}
 
 // 初回レンダリングを実行
 updatePagesAndRender();

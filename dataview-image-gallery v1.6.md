@@ -9,6 +9,8 @@
 # filter_query: "" # 絞り込み
 # filter_mode: "include" # 含む: true / include | 含まない: false / exclude
 # ng_folders: "dataview-image-gallery" # 対象外フォルダ: カンマ区切り | リスト型
+# all_hr_mode: false # すべての区切り線
+# debug: false # デバッグ
 --->
 
 ```dataviewjs
