@@ -119,9 +119,9 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 方法１（おすすめ：コードの保守・更新がかんたん）：  
 
-1. `dataview-image-gallery v1.5.js`と`dataview-image-gallery v1.5md`をダウンロード  
+1. `dataview-image-gallery v1.6.js`と`dataview-image-gallery v1.6md`をダウンロード  
 2. ギャラリーの元データがあるノート(*.md)と同じフォルダに入れる  
-3. `dataview-image-gallery v1.5.md`をリーディングビューで開く  
+3. `dataview-image-gallery v1.6.md`をリーディングビューで開く  
 
 方法２：  
 
@@ -130,7 +130,7 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 ````
 ```dataviewjs
-// ここに v1.5 のスクリプト(約1500行)をすべて貼り付けます
+// ここにスクリプト(約1700行)をすべて貼り付けます
 ```
 ````
 
@@ -143,9 +143,9 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 Method 1 (Recommended: Easy maintenance & updates):  
 
-1. Download `dataview-image-gallery v1.5.js` and `dataview-image-gallery v1.5.md`.  
+1. Download `dataview-image-gallery v1.6.js` and `dataview-image-gallery v1.6.md`.  
 2. Place both files in the same folder where your source note data resides.  
-3. Open `dataview-image-gallery v1.5.md` in Reading View.  
+3. Open `dataview-image-gallery v1.6.md` in Reading View.  
 
 Method 2:  
 
@@ -154,7 +154,7 @@ Method 2:
 
 ````
 ```dataviewja
-// Paste the entire v1.5 script (~1500 lines) here
+// Paste the entire script (~1700 lines) here
 ```
 ````
 
