@@ -1962,31 +1962,42 @@ async function checkForUpdates() {
     if (typeof requestUrl === "undefined") return;
 
     const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    const lastCheck = currentData.last_check;
+    const lastCheck = currentData.last_check || 0;
+    let latestVersion = currentData.latest_version || null;
     const now = Date.now();
-    if (DEBUG) console.log('[DEBUG] 🔔 checkForUpdates:', { currentData: { ...currentData, }, lastCheck, now, });
-
-    // 24時間経っていないなら終了
-    if (lastCheck && (now - lastCheck) <= CHECK_INTERVAL) return;
-
-    try {
-        const res = await requestUrl({
-            url: "https://api.github.com/repos/neon-aiart/dataview-image-gallery/releases/latest",
+    if (DEBUG) {
+        console.log('[DEBUG] 🔔 checkForUpdates:', {
+            currentData: { ...currentData, }, lastCheck, latestVersion, now,
         });
-
-        // チェックした時間を保存
-        currentData.last_check = now;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
-
-        const latestVersion = res.json.tag_name;
-
-        if (`v${SCRIPT_VERSION}` !== latestVersion) {
-            console.log(`Update available: ${latestVersion}`);
-            return latestVersion; // 最新バージョン名を返す
-        }
-    } catch (e) {
-        // オフライン時などはエラーを出さずに静かにスルー
     }
+
+    // 24時間以上経過している場合のみGitHub APIへリクエスト
+    if (!latestVersion || now - lastCheck > CHECK_INTERVAL) {
+        try {
+            const res = await requestUrl({
+                url: "https://api.github.com/repos/neon-aiart/dataview-image-gallery/releases/latest",
+            });
+
+            if (res.json && res.json.tag_name) {
+                latestVersion = res.json.tag_name;
+
+                // 最終通信日時と取得した最新バージョンを保存
+                currentData.last_check = now;
+                currentData.latest_version = latestVersion;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+            }
+        } catch (e) {
+            // オフライン時などはエラーを出さずに静かにスルー（以前のキャッシュを利用）
+        }
+    }
+
+    // 保存されている最新バージョンと現在のスクリプトバージョンを比較
+    if (latestVersion && latestVersion !== `v${SCRIPT_VERSION}` && latestVersion !== SCRIPT_VERSION) {
+        console.log(`[Gallery] 🔔 Update available: ${latestVersion}`);
+        return latestVersion; // 最新バージョン名を返す
+    }
+
+    return null;
 }
 
 // 初回レンダリングを実行
