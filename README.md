@@ -1,4 +1,7 @@
-# 🏖️ DataView Image Gallery v1.6  
+# 🏖️ DataView Image Gallery  
+
+[![Version](https://img.shields.io/badge/version-1.9-orange.svg)](https://github.com/neon-aiart/dataview-image-gallery)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 <img src="./assets/00084-586147234.png" style="float: right; width: 240px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" align="right" width="240px" alt="thumbnail">
 
@@ -17,6 +20,8 @@ It automatically extracts images from notes within a specified folder (or your e
 Enjoy a seamless browsing experience with carousel album views (with dot indicators) for multiple images under a single heading, full keyboard-driven lightbox navigation, and interactive controls.  
 
 ⭐ **スター**をポチッとお願いします✨ (Please hit the **Star** button!)  
+
+[🇯🇵 日本語](#-日本語-japanese) | [🇺🇸 English](#-english-英語) | [🐾 Screenshot](#-スクリーンショット-screenshot)  
 
 <br clear="right">  
 
@@ -43,11 +48,11 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 
 ---
 
-## ✨ 主な特徴 (Features)  
+## 🇯🇵 日本語 (Japanese)  
 
-🇯🇵  
+### ✨ 主な特徴  
 
-### 🍣 究極のフォトビューワー体験  
+#### 🍣 究極のフォトビューワー体験  
 
 * **元ノートへのシームレスなアンカーリンク**: 各カードのタイトル（見出し）をクリックすると、画像が貼り付けられている元データノートの該当位置へ一発でジャンプ（遷移）できます  
 * **複数画像アルバム対応**: １つの見出し内に複数の画像がある場合、カード内に画像切り替えスライダーとドットインジケーターを自動生成  
@@ -57,7 +62,7 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
   * `Ctrl + ← / →` (Mac: `Cmd + ← / →`): 次の/前のカード（見出し）に移動  
 * **マルチウィンドウ対応**: ObsidianのPOP-OUT（別ウィンドウ）にノートを出していても、モーダルが正しいウィンドウ内で開きます  
 
-### 🍹 リッチで直感的なコントロールバー  
+#### 🍹 リッチで直感的なコントロールバー  
 
 * **インタラクティブな設定変更**: 列数（1〜10）、並び替え（ファイル名/作成日時/更新日時）、昇順/降順を画面上のボタンからいつでも変更できます  
 * **フォルダ切替機能**: セレクトボックスから保管庫内の別フォルダへジャンプ  
@@ -67,7 +72,7 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 * **見出しレベル個別トグル**: H2～H6（##〜######）まで、抽出対象にしたい見出し階層をトグルパネルから個別にON/OFF操作できます  
 * **フローティング操作ボタン**: スクロール位置を監視（`IntersectionObserver`）し、画面左下に「最上部へ戻る（Top）」ボタンを自動表示  
 
-### 🧱 堅牢なパースとObsidianネイティブ設計  
+#### 🧱 堅牢なパースとObsidianネイティブ設計  
 
 * **全形式対応**: `<img src="...">`、WikiLink（`![[...]]`）、Markdown標準（`![...](...)`）のすべてが抽出可能対象  
 * **ブロック分割**: 区切り線でノート内を分割し、適切な見出しと画像を紐付け  
@@ -76,101 +81,46 @@ Enjoy a seamless browsing experience with carousel album views (with dot indicat
 * **エラーハンドリング**: 画像が読み込めなかった場合は、SVGプレースホルダーに差し替え  
 * **完全なテーマ適応**: Obsidianの標準CSS変数（`var(--background-secondary)` など）を使用しているため、どんなテーマ（ライト/ダーク）でも違和感なく利用できます  
 
-🇺🇸  
-
-### 🍣 Ultimate Photo Viewer Experience  
-
-* **Direct Anchor Links to Source Notes**: Click any card title (heading) to instantly jump to the exact location of that image in its original note.  
-* **Multi-Image Album Support**: Automatically generates a carousel slider and dot indicators when multiple images are placed under a single heading (up to 10 images per heading).  
-* **Seamless Keyboard Navigation**: Click an image to open a full-screen lightbox modal.  
-  * `← / →`: **Continuous Binge-Watching Mode!** Navigates through images in the same card, automatically crossing over to the next/previous card when reaching the edge.  
-  * `Ctrl + ← / →` (Mac: `Cmd + ← / →`): Instantly jump to the next/previous card (heading).  
-* **Multi-Window Support**: Works flawlessly inside Obsidian POP-OUT (detached) windows with modal overlays contained in the correct window context.  
-
-### 🍹 Rich & Intuitive Control Bar  
-
-* **Interactive Settings**: Dynamically change column count (1–10), sort key (filename, created time, modified time), and sort direction (asc/desc) directly from the UI.  
-* **Folder Switcher**: Easily jump to other vault folders via a dropdown selector (common system folders like `.obsidian` or `trash` are excluded by default).  
-* **Smart Search Filter**: Built-in search bar with Regex support and a one-click toggle for "Include / Exclude" modes.  
-* **Individual Heading Level Toggles**: Toggle extraction targets for heading levels H2 through H6 individually.  
-* **Floating Utility Button**: Automatically presents a "Scroll to Top" button at the bottom-left using `IntersectionObserver`.  
-
-### 🧱 Robust Parsing & Obsidian-Native Design  
-
-* **Universal Format Parsing**: Supports HTML `<img src="...">`, WikiLinks (`![[...]]`), and standard Markdown (`![...](...)`).  
-* **Block Segmentation**: Splits notes by horizontal dividers (`---`, `- - -`, `***`, `* * *`) to associate headings and images into neat blocks.  
-* **Graceful Error Handling**: Automatically replaces broken image links with a clean SVG fallback placeholder.  
-* **Full Theme Adaptation**: Uses native Obsidian CSS variables (`var(--background-secondary)`, etc.) to match any light or dark theme perfectly.  
-
 ---
 
-## 📐 必須要件 (Requirements)
+### 📐 必須要件  
 
 * **Obsidian**: [https://obsidian.md/](https://obsidian.md/)  
 * **Dataview プラグイン**: [https://community.obsidian.md/plugins/dataview](https://community.obsidian.md/plugins/dataview)
-  * 設定から `Enable JavaScript Queries` を必ずONにしてください  
-  * Make sure to enable `Enable JavaScript Queries` in Dataview settings.  
+  * Dataviewの設定画面で **`Enable JavaScript Queries`** を必ず **ON** にしてください  
 
 ---
 
-## 🧩 インストール (Install)
-
-🇯🇵  
+### 🧩 インストール  
 
 方法１（おすすめ：コードの保守・更新がかんたん）：  
 
-1. `dataview-image-gallery v1.6.js`と`dataview-image-gallery v1.6md`をダウンロード  
+1. `dataview-image-gallery v1.9.js`と`dataview-image-gallery v1.9.md`をダウンロード  
 2. ギャラリーの元データがあるノート(*.md)と同じフォルダに入れる  
-3. `dataview-image-gallery v1.6.md`をリーディングビューで開く  
+3. `dataview-image-gallery v1.9.md`をリーディングビューで開く  
 
 方法２：  
 
 1. ギャラリーを表示したいノート(*.md)を作成します  
 2. 以下のコードブロック（DataviewJS）をノートに貼り付けます  
 
-````
-```dataviewjs
-// ここにスクリプト(約1700行)をすべて貼り付けます
-```
-````
+    ````
+    ```dataviewjs
+    // ここにスクリプト(約2000行)をすべて貼り付けます
+    ```
+    ````
 
 3. ギャラリーの元データがあるノート(*.md)と同じフォルダに入れる  
 4. コードを貼ったノートをリーディングビューで開く  
 
 ---
 
-🇺🇸  
-
-Method 1 (Recommended: Easy maintenance & updates):  
-
-1. Download `dataview-image-gallery v1.6.js` and `dataview-image-gallery v1.6.md`.  
-2. Place both files in the same folder where your source note data resides.  
-3. Open `dataview-image-gallery v1.6.md` in Reading View.  
-
-Method 2:  
-
-1. Create a new note (*.md) where you want to render the gallery.  
-2. Paste the DataviewJS script block into the note:
-
-````
-```dataviewja
-// Paste the entire script (~1700 lines) here
-```
-````
-
-3. Place the note in the same folder as your source note data.  
-4. Open the note in Reading View.  
-
----
-
-## 🐻 YAMLプロパティ設定 (Frontmatter)  
-
-🇯🇵  
+### 🐻 YAMLプロパティ設定  
 
 ノートの先頭（プロパティ）に設定を書き込むことで、ギャラリーの初期状態をカスタマイズできます  
 すべての項目は省略可能です  
 
-```
+```yaml
 ---
 sortby: "name" # name| ctime | mtime
 sortorder: "desc" # false / desc | asc / true
@@ -178,7 +128,7 @@ columns: 5 # 1-10
 minwidth: 100 # 10-720
 maxwidth: 640 # 100-2496
 folder: "gallery/2026-07" # dv.current().file.folder
-header_level: "3, 4", # カンマ区切り | 範囲指定 | リスト型
+header_level: "3, 4" # カンマ区切り | 範囲指定 | リスト型
 filter_query: "dataview-image-gallery" # 絞り込み
 filter_mode: "include" # 含む: true / include | 含まない: false / exclude
 ng_folders: # 対象外フォルダ: リスト型カンマ | 区切り
@@ -186,7 +136,7 @@ ng_folders: # 対象外フォルダ: リスト型カンマ | 区切り
 ---
 ```
 
-### 🦔 プロパティ詳細  
+#### 🦔 プロパティ詳細  
 
 `[初期値]`  
 
@@ -204,7 +154,7 @@ ng_folders: # 対象外フォルダ: リスト型カンマ | 区切り
 | `filter_mode` | `include`, `exclude` | `filter_query` に一致するものを「表示（含む）」か「除外する」か |
 | `ng_folders` | リスト、またはカンマ区切り | ギャラリーに表示したくない除外フォルダ: デフォルトのNGリストに追加されます |
 
-## ⌨️ キーボードショートカット (Keyboard Shortcuts)  
+#### ⌨️ キーボードショートカット (Keyboard Shortcuts)  
 
 画像を拡大表示（モーダル展開）している際、以下の操作が可能です  
 
@@ -219,112 +169,56 @@ _(※Macの場合は `Cmd + ← / →`)_
 
 ---
 
-🇺🇸  
-
-### 🦔 Property Details  
-
-`[Default Values]`  
-
-| Property | Example | Description |
-| --- | --- | --- |
-| `columns` | `1` to `10` `[5]` | Number of cards per row. Can also be changed via the control bar. |
-| `sortby` | `[name]`, `ctime`, `mtime` | Sort criteria: Filename, Created time, or Modified time. |
-| `sortorder` | `asc` / `true`, `[desc]` / `false` | Sort order (Ascending / Descending). |
-| `minwidth` | `10–720` `[100]` | Minimum card width in pixels. |
-| `maxwidth` | `100–2496` `[640]` | Maximum card width in pixels. |
-| `folder` | `folder/path` | Target folder to extract images from. Defaults to current note's folder. |
-| `header_level` | `3`, `[3,4]`, `2-6` | Heading levels to extract. Accepts numbers, comma-separated values, or ranges. |
-| `filter_query` | String (Regex supported) | Initial filter query keyword. |
-| `filter_mode` | `include`, `exclude` | Whether `filter_query` operates in "Include" or "Exclude" mode. |
-| `ng_folders` | List or comma-separated | Excluded folders to skip during scanning. Added to default NG list. |
-
-### ⌨️ Keyboard Shortcuts  
-
-When an image modal (lightbox) is expanded:  
-
-| Key | Action |
-| --- | --- |
-| `Esc` | Close modal and return to gallery. |
-| `←` / `→` | **Continuous View**: Navigate images one by one. Crosses over to adjacent cards at boundaries. |
-| `Ctrl + ←` / `→` | **Card Skip**: Jump directly to the next or previous card/heading. |
-
-_(※ Use `Cmd + ← / →` on macOS)_  
-
----
-
-## 📝 元データノートの書き方 (How to Format Your Notes)  
-
-🇯🇵  
+### 📝 元データノートの書き方 (How to Format Your Notes)  
 
 本ギャラリーは、ノート内の **「見出し」** と **「画像」** を自動的に関連付けてカード化します  
 カードのタイトル（見出し）をクリックすると、**その画像が存在する元ノートの位置へ直接ジャンプ**できます！  
 `---` や `* * *` などの**区切り線（水平線）** を入れることで、１つの見出し・画像セットを１つの「ブロック（カード）」として区切ります  
 
-🇺🇸  
+#### 💡 おすすめの書き方パターン  
 
-This gallery automatically links **headings** and **images** inside notes to create card components.  
-Clicking a card title (heading) will **jump directly to that location in the original note!** Inserting divider lines (such as `---` or `* * *`) separates heading and image sets into individual "blocks (cards)."  
-
-### 💡 おすすめの書き方パターン (Recommended Formatting Patterns )  
-
-HTML / WikiLink / Markdown すべて対応 (Supports HTML, WikiLink & Markdown)  
+HTML / WikiLink / Markdown すべて対応  
 
 ```markdown
-## 📁 My Art Gallery
+## 📁 プライベートギャラリー
 
 * * *
 
 <img src="https://example.com/image1.png" style="float: right; width: 300px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" width="300px">
 
-### 🎨 作品タイトル 01 / Artwork Title 01
+### 🎨 作品タイトル１
 
 ここに作品のキャプションやメモ、本文などを自由に記述できるよ💫
 
-Feel free to write captions, notes, or any text you like right here!
-
 ブロック単位なので、見出し・画像・メモなどの順番も自由にできちゃうよ🗽
-
-Since everything is grouped by blocks, you can freely order your headings, images, and notes however you want!
 
 * * *
 
 １つの見出しと複数の画像を並べると、カード内でカルーセル（スライダー）表示になって
 
-Placing multiple images under a single heading turns the card into a carousel (slider) view.
-
 １つのブロックにたくさん画像を入れることもできちゃう🎶（最大10枚まで）
 
-You can pack tons of images into a single block! (Up to 10 images)
-
-### 🎨 作品タイトル 02 / Artwork Title 02
+### 🎨 作品タイトル２
 
 タイトルになる見出しは１つ目がヒット💘
 
-The very first heading detected becomes the card title!
-
-#### 画像２の見出し / image2 heading
+#### 画像２の見出し
 
 ![[image2.png]]
 
 WikiLink形式（![[...]]）で指定できるのは、保管庫（Vault）内にあるローカル画像だけ🖥️
 
-WikiLinks (![[...]]) only support local images stored inside your Vault.
-
-#### 画像３の見出し / image3 heading
+#### 画像３の見出し
 
 ![[image3.png|ALT|300]]
 
 代替テキストやサイズがあっても大丈夫🪧
 
-Even with alt text or sizes, no problem!
-
 * * *
 
-### 🎨 作品タイトル 03 / Artwork Title 03
+### 🎨 作品タイトル３
 
 区切り線（ --- / *** / - - - / * * * ）を入れることで、次のカードとして独立するよ🪤
-
-Inserting horizontal dividers ( --- or *** or - - - or * * * ) separates content into its own independent card!
 
 ![](https://example.com/image4.png)
 
@@ -332,11 +226,9 @@ Inserting horizontal dividers ( --- or *** or - - - or * * * ) separates content
 
 Markdown記法でも代替テキストやサイズがあっても大丈夫👍🏻
 
-No problem with alt text or sizes in Markdown format too!
-
 * * *
 
-### 🎨 作品タイトル 04 / Artwork Title 04
+### 🎨 作品タイトル４
 
 <img src="https://example.com/cover.png">
 <img src="https://example.com/variant1.png" hidden>
@@ -346,10 +238,6 @@ HTMLの `hidden` 属性（`<img src="..." hidden>`）を付けた画像は、元
 ギャラリー側ではそのまま１枠（最大10枚）の中に読み込まれるため、切り替えて表示できます✨
 「元ノートには２枚だけ表示して残りは隠す」など、プレビューの見た目を調整したい時に便利です🔀
 
-Images with the HTML `hidden` attribute (`<img src="..." hidden>`) are hidden in your original note preview,
-but the gallery still loads them into the block (up to 10 images total) so you can view them in the slider!
-Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep your note layout clean!
-
 * * *
 
 ```
@@ -357,30 +245,30 @@ Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep 
 > [!TIP] カード化を回避する区切り線  
 > Markdown上で区切り線を表現しつつ、カード枠として認識させたくない（グループ化を回避したい）場合は  
 > 上の４パターンから意図的に外した記号を使用します  
-> 
-> * ４つ以上の記号: ----, ****  
-> * アンダースコア: ___, _ _ _  
-> * スペースの数が異なる: - --, -  -  -  
-> 
+>
+> * ４つ以上の記号: `----`, `****`  
+> * アンダースコア: `___`, `_ _ _`  
+> * スペースの数が異なる: `- --`, `-  -  -`  
+>
 > など、これらはカード判定（`hrRegex`）にヒットしないため  
-> カード枠で区切らずにノート上の区切り線として自由に配置できます
+> カード枠で区切らずにノート上の区切り線として自由に配置できます  
 
-> [!TIP] Bypassing Card Creation with Dividers
-> If you want to render horizontal rules in Markdown without grouping items into a card, 
-> use any syntax that intentionally avoids the four trigger patterns above.
-> 
-> * 4 or more symbols: `----`, `****`
-> * Underscores: `___`, `_ _ _`
-> * Non-matching spacing: `- --`, `-  -  -`
-> 
-> Since these do not match the card delimiter logic (`hrRegex`), 
-> they will simply render as standard horizontal dividers without creating a card frame.
+### ⚠️ 内部リンクに関する注意点  
+
+Obsidianの仕様上、以下の文字がファイルパス（ノート名）や見出し（アンカー）に含まれている場合、正常に内部リンクとして機能しない（ジャンプできない）ため、スクリプト側で警告アイコンを表示してリンク化を自動的に制限します  
+
+* **ノート名（ファイルパス）に使用できない文字 (5文字):**  
+  * `#` `[` `]` `^` `|`  
+  * ※これらの文字がノート名に含まれている場合、カードやヘッダーのリンク化が無効になります  
+* **見出し（アンカー）に使用できない文字 (2文字):**  
+  * `#` `^`  
+  * ※見出し構造（`#`）やブロックリンク（`^`）を破綻させる文字が含まれる場合、見出しへのアンカーリンクが無効になります  
+
+リンク化不可として検出されたアイテムは、コントロールバー右端の **警告アイコン (⚠️)** にマウスをホバーすることで、対象のパスと理由を一覧で確認できます  
 
 ---
 
-## 🍰 絞り込みフィルター（正規表現）の書き方 (Regex Filter Examples)
-
-🇯🇵  
+### 🍰 絞り込みフィルター（正規表現）の書き方  
 
 `filter_query` プロパティやコントロールパネルのフィルター入力欄では、**「正規表現 (Regex)」** が使用できます  
 日付の指定や複数キーワードの組み合わせなど、柔軟な絞り込みが可能です  
@@ -398,7 +286,8 @@ Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep 
 | **任意の１文字** | `file-.` | 正規表現では `?` ではなく `.` (ドット) が「任意の１文字」になります |
 | **記号そのもの** | `v1\.5` / `\#AIart` | `.` や `?` や `#` などの記号自体を検索する場合は直前に `\` (エスケープ) をつけます |
 
-> **💡 ヒント** > コントロールパネルの **`[含む / 除外]`** ボタンを切り替えることで、「特定のタグや日付が**含まれていないカードだけを表示する**」といった使い方も可能できます  
+> **💡 ヒント**  
+> コントロールパネルの **`[含む / 除外]`** ボタンを切り替えることで、「特定のタグや日付が**含まれていないカードだけを表示する**」といった使い方もできます  
 
 | 区分 | 対象の記号 | 入力例 |
 | --- | --- | --- |
@@ -407,9 +296,222 @@ Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep 
 
 ---
 
-🇺🇸  
+## 🇺🇸 English （英語）  
 
-The `filter_query` property and the filter input field on the control panel support powerful **Regular Expressions (Regex)** alongside standard text matching.
+### ✨ Features  
+
+#### 🍣 Ultimate Photo Viewer Experience  
+
+* **Direct Anchor Links to Source Notes**: Click any card title (heading) to instantly jump to the exact location of that image in its original note.  
+* **Multi-Image Album Support**: Automatically generates a carousel slider and dot indicators when multiple images are placed under a single heading (up to 10 images per heading).  
+* **Seamless Keyboard Navigation**: Click an image to open a full-screen lightbox modal.  
+  * `← / →`: **Continuous Binge-Watching Mode!** Navigates through images in the same card, automatically crossing over to the next/previous card when reaching the edge.  
+  * `Ctrl + ← / →` (Mac: `Cmd + ← / →`): Instantly jump to the next/previous card (heading).  
+* **Multi-Window Support**: Works flawlessly inside Obsidian POP-OUT (detached) windows with modal overlays contained in the correct window context.  
+
+#### 🍹 Rich & Intuitive Control Bar  
+
+* **Interactive Settings**: Dynamically change column count (1–10), sort key (filename, created time, modified time), and sort direction (asc/desc) directly from the UI.  
+* **Folder Switcher**: Easily jump to other vault folders via a dropdown selector (common system folders like `.obsidian` or `trash` are excluded by default).  
+* **Smart Search Filter**: Built-in search bar with Regex support and a one-click toggle for "Include / Exclude" modes.  
+* **Individual Heading Level Toggles**: Toggle extraction targets for heading levels H2 through H6 individually.  
+* **Floating Utility Button**: Automatically presents a "Scroll to Top" button at the bottom-left using `IntersectionObserver`.  
+
+#### 🧱 Robust Parsing & Obsidian-Native Design  
+
+* **Universal Format Parsing**: Supports HTML `<img src="...">`, WikiLinks (`![[...]]`), and standard Markdown (`![...](...)`).  
+* **Block Segmentation**: Splits notes by horizontal dividers (`---`, `- - -`, `***`, `* * *`) to associate headings and images into neat blocks.  
+* **Graceful Error Handling**: Automatically replaces broken image links with a clean SVG fallback placeholder.  
+* **Full Theme Adaptation**: Uses native Obsidian CSS variables (`var(--background-secondary)`, etc.) to match any light or dark theme perfectly.  
+
+---
+
+### 📐 Prerequisites  
+
+* **Obsidian**: [https://obsidian.md/](https://obsidian.md/)  
+* **Dataview Plugin**: [https://community.obsidian.md/plugins/dataview](https://community.obsidian.md/plugins/dataview)
+  * Make sure to enable **`Enable JavaScript Queries`** in the Dataview plugin settings.  
+
+---
+
+### 🧩 Install  
+
+Method 1 (Recommended: Easy maintenance & updates):  
+
+1. Download `dataview-image-gallery v1.9.js` and `dataview-image-gallery v1.9.md`.  
+2. Place both files in the same folder where your source note data resides.  
+3. Open `dataview-image-gallery v1.9.md` in Reading View.  
+
+Method 2:  
+
+1. Create a new note (*.md) where you want to render the gallery.  
+2. Paste the DataviewJS script block into the note:  
+
+    ````
+    ```dataviewjs
+    // Paste the entire script (~2000 lines) here
+    ```
+    ````
+
+3. Place the note in the same folder as your source note data.  
+4. Open the note in Reading View.  
+
+---
+
+### 🐻 Frontmatter (Properties)  
+
+You can customize the initial state of the gallery by adding configuration settings to the Properties (YAML Frontmatter) at the top of your note.  
+All items are optional.  
+
+```yaml
+---
+sortby: "name" # name | ctime | mtime
+sortorder: "desc" # false / desc | asc / true
+columns: 5 # 1-10
+minwidth: 100 # 10-720
+maxwidth: 640 # 100-2496
+folder: "gallery/2026-07" # dv.current().file.folder
+header_level: "3, 4" # Comma-separated | Range | List
+filter_query: "dataview-image-gallery" # Filter keyword
+filter_mode: "include" # Include: true / include | Exclude: false / exclude
+ng_folders: # Excluded folders: List or comma-separated
+  - "Private"
+---
+```
+
+#### 🦔 Property Details  
+
+`[Default Values]`  
+
+| Property | Example | Description |
+| --- | --- | --- |
+| `columns` | `1` to `10` `[5]` | Number of cards per row. Can also be changed via the control bar. |
+| `sortby` | `[name]`, `ctime`, `mtime` | Sort criteria: Filename, Created time, or Modified time. |
+| `sortorder` | `asc` / `true`, `[desc]` / `false` | Sort order (Ascending / Descending). |
+| `minwidth` | `10–720` `[100]` | Minimum card width in pixels. |
+| `maxwidth` | `100–2496` `[640]` | Maximum card width in pixels. |
+| `folder` | `folder/path` | Target folder to extract images from. Defaults to current note's folder. |
+| `header_level` | `3`, `[3,4]`, `2-6` | Heading levels to extract. Accepts numbers, comma-separated values, or ranges. |
+| `filter_query` | String (Regex supported) | Initial filter query keyword. |
+| `filter_mode` | `include`, `exclude` | Whether `filter_query` operates in "Include" or "Exclude" mode. |
+| `ng_folders` | List or comma-separated | Excluded folders to skip during scanning. Added to default NG list. |
+
+#### ⌨️ Keyboard Shortcuts  
+
+When an image modal (lightbox) is expanded:  
+
+| Key | Action |
+| --- | --- |
+| `Esc` | Close modal and return to gallery. |
+| `←` / `→` | **Continuous View**: Navigate images one by one. Crosses over to adjacent cards at boundaries. |
+| `Ctrl + ←` / `→` | **Card Skip**: Jump directly to the next or previous card/heading. |
+
+_(※ Use `Cmd + ← / →` on macOS)_  
+
+---
+
+### 📝 How to Format Your Notes  
+
+This gallery automatically links **headings** and **images** inside notes to create card components.  
+Clicking a card title (heading) will **jump directly to that location in the original note!** Inserting divider lines (such as `---` or `* * *`) separates heading and image sets into individual "blocks (cards)."  
+
+#### 💡 Recommended Formatting Patterns  
+
+Supports HTML, WikiLink & Markdown  
+
+```markdown
+## 📁 My Art Gallery
+
+* * *
+
+<img src="https://example.com/image1.png" style="float: right; width: 300px; margin-left: 15px; border-radius: 10px; border: 1px solid #666;" width="300px">
+
+### 🎨 Artwork Title 01
+
+Feel free to write captions, notes, or any text you like right here!💫
+
+Since everything is grouped by blocks, you can freely order your headings, images, and notes however you want!🗽
+
+* * *
+
+Placing multiple images under a single heading turns the card into a carousel (slider) view.
+
+You can pack tons of images into a single block!🎶 (Up to 10 images)
+
+### 🎨 Artwork Title 02
+
+The very first heading detected becomes the card title!💘
+
+#### image2 heading
+
+![[image2.png]]
+
+WikiLinks (![[...]]) only support local images stored inside your Vault.🖥️
+
+#### image3 heading
+
+![[image3.png|ALT|300]]
+
+Even with alt text or sizes, no problem!🪧
+
+* * *
+
+### 🎨 Artwork Title 03
+
+Inserting horizontal dividers ( --- or *** or - - - or * * * ) separates content into its own independent card!🪤
+
+![](https://example.com/image4.png)
+
+![ALT|300](https://example.com/image5.png)
+
+No problem with alt text or sizes in Markdown format too!👍🏻
+
+* * *
+
+### 🎨 Artwork Title 04
+
+<img src="https://example.com/cover.png">
+<img src="https://example.com/variant1.png" hidden>
+<img src="https://example.com/variant2.png" hidden>
+
+Images with the HTML `hidden` attribute (`<img src="..." hidden>`) are hidden in your original note preview,
+but the gallery still loads them into the block (up to 10 images total) so you can view them in the slider!✨
+Feel free to mix visible and hidden images (e.g., 2 visible + 2 hidden) to keep your note layout clean!🔀
+
+* * *
+
+```
+
+> [!TIP] Bypassing Card Creation with Dividers  
+> If you want to render horizontal rules in Markdown without grouping items into a card,  
+> use any syntax that intentionally avoids the four trigger patterns above.  
+>
+> * 4 or more symbols: `----`, `****`  
+> * Underscores: `___`, `_ _ _`  
+> * Non-matching spacing: `- --`, `-  -  -`  
+>
+> Since these do not match the card delimiter logic (`hrRegex`),  
+> they will simply render as standard horizontal dividers without creating a card frame.  
+
+### ⚠️ Limitations on Internal Links  
+
+Due to Obsidian's specifications, items containing specific characters in their file paths or headings cannot function properly as internal links.  
+The script automatically detects these characters, restricts linking, and displays a warning icon.  
+
+* **Forbidden characters in Note Names / File Paths (5 characters):**  
+  * `#` `[` `]` `^` `|`  
+  * Note: If a note name contains any of these characters, internal links for that card or header will be disabled.  
+* **Forbidden characters in Headings / Anchors (2 characters):**  
+  * `#` `^`  
+  * Note: If a heading contains characters that break heading structure (`#`) or block links (`^`), anchor links to that heading will be disabled.  
+
+Items detected as unlinkable can be reviewed by hovering over the **Warning Icon (⚠️)** on the far right of the control bar, which shows a detailed list of affected targets and reasons.  
+
+---
+
+### 🍰 How to Use the Filter Query (Regex)  
+
+The `filter_query` property and the filter input field on the control panel support powerful **Regular Expressions (Regex)** alongside standard text matching.  
 
 | Goal | Example (`filter_query`) | Description |
 | --- | --- | --- |
@@ -424,7 +526,8 @@ The `filter_query` property and the filter input field on the control panel supp
 | **Single Character** | `file-.` | In Regex, use `.` (dot) instead of `?` to match any single character. |
 | **Search Exact Symbols** | `v1\.5` / `\#AIart` | Escape special symbols like `.`, `?`, or `#` by prefixing them with `\` (backslash). |
 
-> **💡 Tip** > Use the **`[Include / Exclude]`** toggle in the control panel to quickly filter out unwanted cards (e.g., hide cards matching a specific keyword)!
+> **💡 Tip**  
+> Use the **`[Include / Exclude]`** toggle in the control panel to quickly filter out unwanted cards (e.g., hide cards matching a specific keyword)!  
 
 | Symbol Type | Characters | Example |
 | --- | --- | --- |
@@ -457,19 +560,19 @@ The `filter_query` property and the filter input field on the control panel supp
   <tr>
     <td width="24%" align="center">
       <b>🪄 絞り込み（正規表現） / Filter & Search (Regex)</b><br>
-      <img src="./screenshot/wachichi-05.png" alt="5 Columns Light">
+      <img src="./screenshot/wachichi-05.png" alt="Filter & Search Regex">
     </td>
     <td width="24%" align="center">
       <b>🔍 拡大表示 / Modal Lightbox</b><br>
-      <img src="./screenshot/wachichi-06.png" alt="5 Columns Light">
+      <img src="./screenshot/wachichi-06.png" alt="Modal Lightbox">
     </td>
     <td width="24%" align="center">
       <b>💫 元ノートのプレビュー / Raw Note Preview</b><br>
-      <img src="./screenshot/wachichi-07.png" alt="5 Columns Light">
+      <img src="./screenshot/wachichi-07.png" alt="Raw Note Preview">
     </td>
     <td width="24%" align="center">
       <b>📝 元ノートのソース / Raw Note Source</b><br>
-      <img src="./screenshot/wachichi-08.png" alt="5 Columns Light">
+      <img src="./screenshot/wachichi-08.png" alt="Raw Note Source">
     </td>
 </table>
 
@@ -481,14 +584,15 @@ _(Special thanks to my mutual follower Wachichi [@takatawachichi.bsky.social](ht
 
 ## 📝 更新履歴 (Changelog)  
 
-### v1.7 and later (Upcoming Tasks / Backlog)  
+### v2.0 and later (Upcoming Tasks / Backlog)  
 
+<!--
 * [ ] ワンクリックで追加できるボタン  
 * [ ] ファイルごとでアコーディオン  
 
 Work in Progress...  
+-->
 
-<!--
 No Tasks...  
 
 **本スクリプトは本バージョンをもって機能的に完成しています。**  
@@ -496,14 +600,26 @@ No Tasks...
 
 **This script is functionally complete as of this version.**  
 There are no planned feature updates at this time, but bug reports will be addressed as needed.  
--->
 
-### v1.6 (Current Release)  
+### v1.9 (Current Release)  
+
+<!-- ☑️ 🧼 自前のスクロール処理を削除 -->
+
+<!-- ### v1.8 (UnReleased) -->
+
+☑️ パスと見出しのコードを関数化  
+<!-- ✅ 🖱️ アンカーからリンク先に移動後に見出しをセンターになるようにスクロール -->
+
+### v1.7 (UnReleased)  
+
+✅ ⚠️ パスと見出しで使えない文字を使っているときの警告を追加  
+
+### v1.6  
 
 ✅ 保管庫と並び替えと列数のテキストをアイコンに変更  
 ✅ 並び替えのファイル名/作成日時/更新日時のセレクトボックスをアイコン（トグル）に変更  
 ✅ 目次 (TOC) フローティングボタンを追加  
-☑️ 🔔更新通知を追加  
+☑️ 🔔 更新通知を追加  
 
 ☑️ プロパティ(yaml)でですべての区切り線の応用バリエーションに対応  
 ☑️ yamlにdebugを追加  
@@ -606,7 +722,7 @@ With 1,500+ lines of robust architecture, intuitive UI controls, and flawless ha
 
 ---
 
-## 開発者 (Credits)  
+## ⛄ 開発者 (Credits)  
 
 * **Executive Producer & Lead Architect**: ねおん (Neon)  
 * **Assistant & Core Developer**: Gemini  
