@@ -604,6 +604,7 @@ There are no planned feature updates at this time, but bug reports will be addre
 ### v1.9 (Current Release)  
 
 <!-- ☑️ 🧼 自前のスクロール処理を削除 -->
+<!-- ☑️ 🔔 更新通知を修正 -->
 
 <!-- ### v1.8 (UnReleased) -->
 
